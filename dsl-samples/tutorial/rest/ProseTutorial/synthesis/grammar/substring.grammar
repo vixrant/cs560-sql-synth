@@ -1,0 +1,25 @@
+﻿using semantics ProseTutorial.Semantics;
+using learners ProseTutorial.WitnessFunctions;
+
+language REST;
+
+@complete feature double Score = ProseTutorial.RankingScore;
+
+@input string Inputname;
+@start string Tier4Table := Named(Tname) | Group( Tier3Table, Array<Cname>, Array<Gc>) | Join( Tier4Table, Tier4Table, Pairs) | LeftJoin( Tier4Table, Tier3Table, Pair);
+string Tier3Table := Select(Tier4Table, Pred) | N(Tier4Table);
+string Tier2Table := Project(Tier3Table, Array<Cname>) | N(Tier3Table);
+string Tier1Table := Order(Tier2Table, Array<Key>) | N(Tier2Table);
+string Key := Asc(Cname) | Desc(Cname);
+string Col := Named(Cname) | GC(Gc);
+string Prim := Const(Col, Binop) | InputCompare(Inputname, Binop) | IsNull(Cname) | IsNotNull(Cname);
+string Agg := Max() | Min();
+string Binop := Eq() | Lt() | Lteq() | Gt() | Gteq() | Neq();
+
+string Tname;
+string Cname;
+
+type Gc = (Agg, Cname);
+type Pairs = Array<Pair>;
+type Pair = (Cname, Cname);
+type Pred = Array<Prim>;
