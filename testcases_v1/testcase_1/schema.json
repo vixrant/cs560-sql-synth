@@ -1,0 +1,41 @@
+{
+    "inputs":[{
+        "name":"addresses",
+        "columns": [
+            "first",
+            "last",
+            "address",
+            "city",
+            "state",
+            "zip"
+        ]
+    },{
+        "name":"airtravel",
+        "columns": [
+            "month",
+            "1958",
+            "1959",
+            "1960"
+        ]
+    },{
+        "name":"cities",
+        "columns": [
+            "LatD",
+            "LatM",
+            "LatS",
+            "NS",
+            "LonD",
+            "LonM",
+            "LonS",
+            "EW",
+            "city",
+            "state"
+        ]
+    }],
+    "output":[
+        "month",
+        "1958",
+        "1959",
+        "1960"
+    ]
+}

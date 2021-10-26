@@ -10,6 +10,16 @@ using Microsoft.ProgramSynthesis.Learning;
 using Microsoft.ProgramSynthesis.Learning.Strategies;
 using Microsoft.ProgramSynthesis.Specifications;
 using Microsoft.ProgramSynthesis.VersionSpace;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+public class TableSchema {
+    public string name { get; set; }
+    public IList<string> columns { get; set; }
+}
+public class ExampleSchema {
+    public IList<TableSchema> inputs { get; set; }
+    public IList<string> output { get; set; }
+}
 
 namespace ProseTutorial
 {
@@ -26,99 +36,53 @@ namespace ProseTutorial
         private static readonly Dictionary<State, object> Examples = new Dictionary<State, object>();
         private static ProgramNode _topProgram;
 
-        private static void Main(string[] args)
-        {
+        private static List<string[]> parsefile(string filename) {
+            List<string[]> filecontents = new List<string[]>();
+            using (StreamReader reader = new StreamReader(filename)) {
+                string line;
+                while ((line = reader.ReadLine()) != null) {
+                    Regex CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
+                    filecontents.Add(CSVParser.Split(line));
+                }
+            }
+            return filecontents;
+        }
+        private static void Main(string[] args) {
             _prose = ConfigureSynthesis();
-            var menu = @"Select one of the options: 
-1 - provide new example
-2 - run top synthesized program on a new input
-3 - exit";
-            var option = 0;
-            while (option != 3)
-            {
-                Console.Out.WriteLine(menu);
-                try
-                {
-                    option = short.Parse(Console.ReadLine());
-                }
-                catch (Exception)
-                {
-                    Console.Out.WriteLine("Invalid option. Try again.");
-                    continue;
-                }
-
-                try
-                {
-                    RunOption(option);
-                }
-                catch (Exception e)
-                {
-                    Console.Error.WriteLine("Something went wrong...");
-                    Console.Error.WriteLine("Exception message: {0}", e.Message);
-                }
+            string input;
+            //input arguments seems to be 0-indexed when using dotnet run... weird...
+            if (args.Length>0) { input = args[0]; } else {
+                Console.Out.WriteLine("Please specify a path to a directory containing a schema and some examples");
+                input = Console.ReadLine();
             }
-        }
-
-        private static void RunOption(int option)
-        {
-            switch (option)
-            {
-                case 1:
-                    LearnFromNewExample();
-                    break;
-                case 2:
-                    RunOnNewInput();
-                    break;
-                default:
-                    Console.Out.WriteLine("Invalid option. Try again.");
-                    break;
-            }
-        }
-
-        private static void LearnFromNewExample()
-        {
-            Console.Out.Write("Provide a new input-output example (e.g., \"(Sumit Gulwani)\",\"Gulwani\"): ");
-            try
-            {
-                string input = Console.ReadLine();
-                if (input != null)
-                {
-                    int startFirstExample = input.IndexOf("\"", StringComparison.Ordinal) + 1;
-                    int endFirstExample = input.IndexOf("\"", startFirstExample + 1, StringComparison.Ordinal) + 1;
-                    int startSecondExample = input.IndexOf("\"", endFirstExample + 1, StringComparison.Ordinal) + 1;
-                    int endSecondExample = input.IndexOf("\"", startSecondExample + 1, StringComparison.Ordinal) + 1;
-
-                    if (startFirstExample >= endFirstExample || startSecondExample >= endSecondExample)
-                        throw new Exception(
-                            "Invalid example format. Please try again. input and out should be between quotes");
-
-                    string inputExample = input.Substring(startFirstExample, endFirstExample - startFirstExample - 1);
-                    string outputExample =
-                        input.Substring(startSecondExample, endSecondExample - startSecondExample - 1);
-
-                    State inputState = State.CreateForExecution(Grammar.InputSymbol, inputExample);
-                    Examples.Add(inputState, outputExample);
+            // input = Path.Combine(new String[] {System.IO.Directory.GetCurrentDirectory(),input});
+            if (!Directory.Exists(input)) { Console.Out.WriteLine("Invalid input: {0} isn't a directory",input);return;}
+            string schemapath = Path.Combine(new String[] {input,"schema.json"});
+            if (!File.Exists(schemapath)) { Console.Out.WriteLine("Invalid input: {0} doesn't exist",schemapath);return;}
+            ExampleSchema schema = JsonConvert.DeserializeObject<ExampleSchema>(File.ReadAllText(schemapath));
+            foreach (string subfile in Directory.GetDirectories(input)) {
+                List<List<string[]>> intables = new List<List<string[]>>();
+                foreach (TableSchema tableschema in schema.inputs) {
+                    string inputpath = Path.Combine(new String[] {subfile,"input_tables",tableschema.name+".csv"});
+                    if (!File.Exists(inputpath)) { Console.Out.WriteLine("Required file not found: {0} doesn't exist",inputpath);return;}
+                    intables.Add(parsefile(inputpath));
                 }
-            }
-            catch (Exception)
-            {
-                throw new Exception("Invalid example format. Please try again. input and out should be between quotes");
+                string outputpath = Path.Combine(new String[] {subfile,"output_table.csv"});
+                if (!File.Exists(outputpath)) { Console.Out.WriteLine("Required file not found: {0} doesn't exist",outputpath);return;}
+                List<string[]> outable = parsefile(outputpath);
+                State inputState = State.CreateForExecution(Grammar.InputSymbol, intables);
+                Examples.Add(inputState, outable);
             }
 
             var spec = new ExampleSpec(Examples);
-            Console.Out.WriteLine("Learning a program for examples:");
-            foreach (KeyValuePair<State, object> example in Examples)
-                Console.WriteLine("\"{0}\" -> \"{1}\"", example.Key.Bindings.First().Value, example.Value);
-
+            Console.Out.WriteLine("Learning a program for {0} examples...",Examples.Count);
             var scoreFeature = new RankingScore(Grammar);
             ProgramSet topPrograms = _prose.LearnGrammarTopK(spec, scoreFeature, 4, null);
             if (topPrograms.IsEmpty) throw new Exception("No program was found for this specification.");
-
             _topProgram = topPrograms.RealizedPrograms.First();
             Console.Out.WriteLine("Top 4 learned programs:");
             var counter = 1;
-            foreach (ProgramNode program in topPrograms.RealizedPrograms)
-            {
+            foreach (ProgramNode program in topPrograms.RealizedPrograms) {
                 if (counter > 4) break;
                 Console.Out.WriteLine("==========================");
                 Console.Out.WriteLine("Program {0}: ", counter);

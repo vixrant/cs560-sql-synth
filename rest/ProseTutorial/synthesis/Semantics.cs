@@ -1,15 +1,10 @@
-﻿namespace ProseTutorial
-{
-    public static class Semantics
-    {
-        public static string Substring(string v, int start, int end)
-        {
-            return v.Substring(start, end - start);
-        }
+﻿using System.Collections.Generic;
 
-        public static int? AbsPos(string v, int k)
-        {
-            return k - 1;
+namespace ProseTutorial
+{
+    public static class Semantics {
+        public static List<string[]> Named(List<List<string[]>> inputs,int selector) {
+            return inputs[selector];
         }
     }
 }
