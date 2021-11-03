@@ -26,7 +26,7 @@ namespace ProseTutorial
 
 
         [FeatureCalculator(nameof(Semantics.Order))]
-        public static double Order(double a) {
+        public static double Order(double a,double u) {
             return a;
         }
         [FeatureCalculator(nameof(Semantics.Select))]
@@ -42,8 +42,8 @@ namespace ProseTutorial
             return a+b;
         }
         [FeatureCalculator(nameof(Semantics.Group))]
-        public static double Group(double a) {
-            return a;
+        public static double Group(double a,double u,double v) {
+            return a+u+v;
         }
 
 
@@ -71,5 +71,12 @@ namespace ProseTutorial
         public static double joiningLeftColumn() { return 0; }
         [FeatureCalculator("joiningRightColumn")]
         public static double joiningRightColumn() { return 0; }
+
+        [FeatureCalculator("sortingCriteria")]
+        public static double sortingCriteria() { return 0; }
+        [FeatureCalculator("groupingColumns")]
+        public static double groupingColumns() { return 0; }
+        [FeatureCalculator("groupingAggregations")]
+        public static double groupingAggregations() { return 0; }
     }
 }

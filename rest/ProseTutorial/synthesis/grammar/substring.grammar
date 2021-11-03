@@ -12,7 +12,7 @@ language REST;
     | N1(Tier2Table);
 
 List<string[]> Tier2Table :=
-    Order(Tier3Table)
+    Order(Tier3Table,sortingCriteria)
     | N2(Tier3Table);
 
 List<string[]> Tier3Table :=
@@ -26,11 +26,15 @@ List<string[]> Tier4Table :=
 
 List<string[]> Tier5Table :=
     Named(InputTables,tableIndex)
-    | Group(Tier3Table)
+    | Group(Tier3Table,groupingColumns,groupingAggregations)
 
 int joiningLeftColumn;
 int joiningRightColumn;
 int tableIndex;
 List<int> projectionList;
-//List<(bool,int)> sortingCriteria;
-//(List<int>,List<(bool,int)>) groupingColumnsAndAggregations;//first list is all the properties to group by, second list is the direction and then the property to aggregate by within the groups
+//a note for sortingCriteria and groupingAggregations:
+//    positive numbers correspond to sorting the nth column in descending order.
+//    negative numbers correspond to sorting the (1-n)th column in ascending order.
+List<int> sortingCriteria;
+List<int> groupingColumns;//properties to group by
+List<int> groupingAggregations;//aggregations within groups
