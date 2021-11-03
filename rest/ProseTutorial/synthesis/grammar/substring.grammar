@@ -7,13 +7,30 @@ language REST;
 
 @input List<List<string[]>> InputTables;
 
-@start List<string[]> Tier4Table :=
-    Named(InputTables,tableindex)
+@start List<string[]> StarterTable :=
+    Project(StarterTable2,projectionList)
+
+List<string[]> StarterTable2 :=
+    Named(InputTables,tableIndex)
+
+int tableIndex;
+List<int> projectionList;
+
+
+
+
+//@start List<string[]> Tier5Table :=
+//    Named(InputTables,tableIndex)
 //    | Group( Tier3Table, Array<Cname>, Array<(Agg, Cname)>)
 //    | Join( Tier4Table, Tier4Table, Array<(Cname, Cname)>)
 //    | LeftJoin( Tier4Table, Tier3Table, (Cname, Cname));
 
-int tableindex;
+// List<string[]> Tier4Table :=
+//    Named(InputTables,tableIndex)
+//    | Group( Tier3Table, Array<Cname>, Array<(Agg, Cname)>)
+//    | Join( Tier4Table, Tier4Table, Array<(Cname, Cname)>)
+//    | LeftJoin( Tier4Table, Tier3Table, (Cname, Cname));
+
 
 //List<string[]> Tier3Table := 
 //      Select(Tier4Table, Array<Prim>)

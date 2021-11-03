@@ -42,7 +42,10 @@ namespace ProseTutorial
                 string line;
                 while ((line = reader.ReadLine()) != null) {
                     Regex CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
-                    filecontents.Add(CSVParser.Split(line));
+                    var arr = CSVParser.Split(line);
+                    for (int i=0;i<arr.Length;i++) arr[i]=arr[i].Trim();
+                    if (filecontents.Count==0 || arr.Length==filecontents[0].Length)
+                        filecontents.Add(CSVParser.Split(line));
                 }
             }
             return filecontents;

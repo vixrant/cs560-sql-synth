@@ -1,6 +1,8 @@
 ﻿using Microsoft.ProgramSynthesis;
 using Microsoft.ProgramSynthesis.AST;
 using Microsoft.ProgramSynthesis.Features;
+using System.Collections.Generic;
+
 
 namespace ProseTutorial
 {
@@ -16,7 +18,14 @@ namespace ProseTutorial
         public static double Named(double a,double b) {
             return a+b+1;
         }
-        [FeatureCalculator("tableindex", Method = CalculationMethod.FromLiteral)]
-        public static double tableindex(int index) { return index; }
+        [FeatureCalculator(nameof(Semantics.Project))]
+        public static double Project(double a,double b) {
+            return a+1;
+        }
+        [FeatureCalculator("tableIndex", Method = CalculationMethod.FromLiteral)]
+        public static double tableIndex(int index) { return index; }
+
+        [FeatureCalculator("projectionList")]
+        public static double projectionList() { return 0; }
     }
 }
