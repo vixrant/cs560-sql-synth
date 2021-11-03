@@ -32,15 +32,12 @@ public class UniqueQueue<T> {
 abstract class CustomSpec : Spec {
     public IDictionary<State, object> CustomTableExamples;
     public CustomSpec(IDictionary<State, object> CustomTableExamples): base(CustomTableExamples.Keys) {
-        Console.Out.WriteLine("CONSTRUCTED");
         this.CustomTableExamples = CustomTableExamples;
     }
     protected override int GetHashCodeOnInput(State state) {
-        Console.Out.WriteLine("HAAAAAASH!");
         return this.CustomTableExamples[state].GetHashCode();
     }
     protected override Spec TransformInputs(Func<State, State> f) {
-        Console.Out.WriteLine("I WAS CALLED! 2");
 			var result = new Dictionary<State, object>();
 			foreach (var input in this.CustomTableExamples.Keys) {
 				result[f(input)] = this.CustomTableExamples[input];
@@ -48,15 +45,12 @@ abstract class CustomSpec : Spec {
 			return new DoubleFilteredTableSpec(result);
     }
     protected override bool EqualsOnInput(State state,Spec spec) {
-        Console.Out.WriteLine("I WAS CALLED EqualsOnInput!");
         throw new NotImplementedException();
     }
     protected override XElement SerializeImpl(Dictionary<object, int> statespace, SpecSerializationContext context) {
-        Console.Out.WriteLine("I WAS CALLED SerializeImpl!");
         throw new NotImplementedException();
     }
     protected override XElement InputToXML(State state,Dictionary<object, int> statespace) {
-        Console.Out.WriteLine("I WAS CALLED InputToXML!");
         throw new NotImplementedException();
     }
 }
@@ -207,6 +201,8 @@ namespace ProseTutorial {
         }
 
 
+
+
         [WitnessFunction(nameof(Semantics.Project), 1, DependsOnParameters = new[] { 0 })]
         internal DisjunctiveExamplesSpec WitnessProject2(GrammarRule rule, ExampleSpec vanish, ExampleSpec spec) {
             var result = new Dictionary<State, IEnumerable<object>>();
@@ -235,6 +231,17 @@ namespace ProseTutorial {
             }
             return new DisjunctiveExamplesSpec(result);
         }
+
+
+        [WitnessFunction(nameof(Semantics.N1), 0)]
+        internal DoubleFilteredTableSpec WitnessN1(GrammarRule rule, DoubleFilteredTableSpec spec) {return spec;}
+        [WitnessFunction(nameof(Semantics.N2), 0)]
+        internal DoubleFilteredTableSpec WitnessN2(GrammarRule rule, DoubleFilteredTableSpec spec) {return spec;}
+        [WitnessFunction(nameof(Semantics.N3), 0)]
+        internal DoubleFilteredTableSpec WitnessN3(GrammarRule rule, DoubleFilteredTableSpec spec) {return spec;}
+        [WitnessFunction(nameof(Semantics.N4), 0)]
+        internal DoubleFilteredTableSpec WitnessN4(GrammarRule rule, DoubleFilteredTableSpec spec) {return spec;}
+
     }
 }
 

@@ -7,60 +7,30 @@ language REST;
 
 @input List<List<string[]>> InputTables;
 
-@start List<string[]> StarterTable :=
-    Project(StarterTable2,projectionList)
+@start List<string[]> Tier1Table :=
+    Project(Tier2Table,projectionList)
+    | N1(Tier2Table);
 
-List<string[]> StarterTable2 :=
+List<string[]> Tier2Table :=
+    Order(Tier3Table)
+    | N2(Tier3Table);
+
+List<string[]> Tier3Table :=
+    Select(Tier4Table)
+    | N3(Tier4Table);
+
+List<string[]> Tier4Table :=
+    Join(Tier5Table,joiningLeftColumn,Tier4Table,joiningRightColumn)
+    | LeftJoin(Tier5Table,joiningLeftColumn,Tier3Table,joiningRightColumn)
+    | N4(Tier5Table);
+
+List<string[]> Tier5Table :=
     Named(InputTables,tableIndex)
+    | Group(Tier3Table)
 
+int joiningLeftColumn;
+int joiningRightColumn;
 int tableIndex;
 List<int> projectionList;
-
-
-
-
-//@start List<string[]> Tier5Table :=
-//    Named(InputTables,tableIndex)
-//    | Group( Tier3Table, Array<Cname>, Array<(Agg, Cname)>)
-//    | Join( Tier4Table, Tier4Table, Array<(Cname, Cname)>)
-//    | LeftJoin( Tier4Table, Tier3Table, (Cname, Cname));
-
-// List<string[]> Tier4Table :=
-//    Named(InputTables,tableIndex)
-//    | Group( Tier3Table, Array<Cname>, Array<(Agg, Cname)>)
-//    | Join( Tier4Table, Tier4Table, Array<(Cname, Cname)>)
-//    | LeftJoin( Tier4Table, Tier3Table, (Cname, Cname));
-
-
-//List<string[]> Tier3Table := 
-//      Select(Tier4Table, Array<Prim>)
-//    | N(Tier4Table);
-
-//List<string[]> Tier2Table :=
-//      Project(Tier3Table, Array<Cname>)
-//    | N(Tier3Table);
-
-//List<string[]> Tier1Table :=
-//      Order(Tier2Table, Array<Key>)
-//    | N(Tier2Table);
-
-//List<string[]> Key :=
-//      Asc(Cname)
-//    | Desc(Cname);
-
-//List<string[]> Col :=
-//      Named(Cname)
-//    | GC(Agg, Cname);
-
-//List<string[]> Prim :=
-//      Const(Col, Binop)
-//    | InputCompare(Inputname, Binop)
-//    | IsNull(Cname)
-//    | IsNotNull(Cname);
-
-//List<string[]> Agg := Max() | Min();
-//List<string[]> Binop := Eq() | Lt() | Lteq() | Gt() | Gteq() | Neq();
-
-//List<string[]> Tname;
-//List<string[]> Cname;
-
+//List<(bool,int)> sortingCriteria;
+//(List<int>,List<(bool,int)>) groupingColumnsAndAggregations;//first list is all the properties to group by, second list is the direction and then the property to aggregate by within the groups
