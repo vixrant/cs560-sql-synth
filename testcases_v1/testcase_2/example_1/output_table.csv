@@ -1,9 +1,13 @@
-"Day of Week","Number of Crashes"
-"Sunday",13664
-"Monday",17279
-"Tuesday",17337
-"Wednesday",17394
-"Thursday",17954
-"Friday",19147
-"Saturday",15714
-
+"Month","1958","1959"
+"JAN",340,360
+"FEB",318,342
+"MAR",362,406
+"APR",348,396
+"MAY",363,420
+"JUN",435,472
+"JUL",491,548
+"AUG",505,559
+"SEP",404,463
+"OCT",359,407
+"NOV",310,362
+"DEC",337,405

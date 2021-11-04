@@ -204,7 +204,7 @@ namespace ProseTutorial {
 
 
         [WitnessFunction(nameof(Semantics.Project), 1, DependsOnParameters = new[] { 0 })]
-        internal DisjunctiveExamplesSpec WitnessProject2(GrammarRule rule, ExampleSpec vanish, ExampleSpec spec) {
+        internal DisjunctiveExamplesSpec WitnessProject2(GrammarRule rule, ExampleSpec spec, ExampleSpec vanish) {
             var result = new Dictionary<State, IEnumerable<object>>();
             foreach (var example in spec.Examples) {
                 State inputState = example.Key;
