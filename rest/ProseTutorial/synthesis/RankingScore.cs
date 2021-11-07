@@ -16,11 +16,11 @@ namespace ProseTutorial
 
         [FeatureCalculator(nameof(Semantics.Named))]
         public static double Named(double a,double b) {
-            return a+b+1;
+            return a+b-1;
         }
         [FeatureCalculator(nameof(Semantics.Project))]
         public static double Project(double a,double b) {
-            return a+1;
+            return a-1;
         }
 
 
@@ -35,12 +35,12 @@ namespace ProseTutorial
         }
         [FeatureCalculator(nameof(Semantics.Join))]
         public static double Join(double a,double wa,double b,double wb) {
-            return a+b;
+            return a+b-1;
         }
-        [FeatureCalculator(nameof(Semantics.LeftJoin))]
-        public static double LeftJoin(double a,double wa,double b,double wb) {
-            return a+b;
-        }
+        // [FeatureCalculator(nameof(Semantics.LeftJoin))]
+        // public static double LeftJoin(double a,double wa,double b,double wb) {
+        //     return a+b;
+        // }
         [FeatureCalculator(nameof(Semantics.Group))]
         public static double Group(double a,double u,double v) {
             return a+u+v;

@@ -80,7 +80,7 @@ namespace ProseTutorial
             var spec = new ExampleSpec(Examples);
             Console.Out.WriteLine("Learning a program for {0} examples...",Examples.Count);
             var scoreFeature = new RankingScore(Grammar);
-            ProgramSet topPrograms = _prose.LearnGrammarTopK(spec, scoreFeature, 4, null);
+            ProgramSet topPrograms = _prose.LearnGrammarTopK(spec, scoreFeature, 1, null);
             if (topPrograms.IsEmpty) throw new Exception("No program was found for this specification.");
             _topProgram = topPrograms.RealizedPrograms.First();
             Console.Out.WriteLine("Top 4 learned programs:");

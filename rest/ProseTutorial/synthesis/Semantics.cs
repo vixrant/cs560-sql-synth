@@ -57,35 +57,35 @@ namespace ProseTutorial
             }
             return result;
         }
-        public static List<string[]> LeftJoin(List<string[]> subq1,int a_col,List<string[]> subq2,int b_col) {
-            var result = new List<string[]>();
-            for (int a=0;a<subq1.Count;a++) {
-                var foundone = false;
-                for (int b=0;b<subq2.Count;b++) {
-                    if (subq1[a][a_col]==subq2[b][b_col]) {
-                        var z = new string[subq1[a].Length+subq2[b].Length-1];
-                        subq1[a].CopyTo(z, 0);
-                        for (int y=0;y<subq2[b].Length;y++) {
-                            if (y<b_col) z[y+subq1[a].Length]=subq2[b][y];
-                            if (y>b_col) z[y+subq1[a].Length-1]=subq2[b][y];
-                        }
-                        foundone = true;
-                        result.Add(z);
-                    }
-                }
-                if (!foundone) {
-                    var z = new string[subq1[a].Length+subq2[0].Length-1];
-                    subq1[a].CopyTo(z, 0);
-                    for (int y=0;y<subq2[0].Length;y++) {
-                        if (y<b_col) z[y+subq1[a].Length]="";
-                        if (y>b_col) z[y+subq1[a].Length-1]="";
-                    }
-                    foundone = true;
-                    result.Add(z);
-                }
-            }
-            return result;
-        }
+        // public static List<string[]> LeftJoin(List<string[]> subq1,int a_col,List<string[]> subq2,int b_col) {
+        //     var result = new List<string[]>();
+        //     for (int a=0;a<subq1.Count;a++) {
+        //         var foundone = false;
+        //         for (int b=0;b<subq2.Count;b++) {
+        //             if (subq1[a][a_col]==subq2[b][b_col]) {
+        //                 var z = new string[subq1[a].Length+subq2[b].Length-1];
+        //                 subq1[a].CopyTo(z, 0);
+        //                 for (int y=0;y<subq2[b].Length;y++) {
+        //                     if (y<b_col) z[y+subq1[a].Length]=subq2[b][y];
+        //                     if (y>b_col) z[y+subq1[a].Length-1]=subq2[b][y];
+        //                 }
+        //                 foundone = true;
+        //                 result.Add(z);
+        //             }
+        //         }
+        //         if (!foundone) {
+        //             var z = new string[subq1[a].Length+subq2[0].Length-1];
+        //             subq1[a].CopyTo(z, 0);
+        //             for (int y=0;y<subq2[0].Length;y++) {
+        //                 if (y<b_col) z[y+subq1[a].Length]="";
+        //                 if (y>b_col) z[y+subq1[a].Length-1]="";
+        //             }
+        //             foundone = true;
+        //             result.Add(z);
+        //         }
+        //     }
+        //     return result;
+        // }
         public static List<string[]> Group(List<string[]> subq,List<int> groupby,List<int> aggregations) {
             var result = new List<string[]>();
             for (int row=0;row<subq.Count;row++) {
