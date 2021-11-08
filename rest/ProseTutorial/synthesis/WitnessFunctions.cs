@@ -36,6 +36,155 @@ public class UniqueQueue<T> {
 
 
 
+
+class DisjunctiveCriteriaSatSpec : Spec {
+    public IDictionary<State, Tuple<int,int,int>> LastTuple;
+    public IDictionary<State, List<List<string[]>>[]> SatExamples;
+    public DisjunctiveCriteriaSatSpec(IDictionary<State, Tuple<int,int,int>> LastTuple,IDictionary<State, List<List<string[]>>[]> SatExamples): base(SatExamples.Keys) {
+        this.SatExamples = SatExamples;
+        this.LastTuple = LastTuple;
+        foreach (var w in SatExamples) {
+            if (w.Value.Length==0) throw new ArgumentException("No possibilities- null should be returned instead of creating a spec.");
+            foreach (var v in w.Value) {
+                if (v.Count==0) throw new ArgumentException("No components- this isn't supported and shouldn't arise from well-formed examples.");
+                foreach (var u in v) {
+                    if (u.Count==0) throw new ArgumentException("No rows in the component- this isn't supported and shouldn't arise from well-formed examples.");
+                    foreach (var j in u) {
+                        if (j.Length==0) throw new ArgumentException("No columns in the component- this isn't supported and shouldn't arise from well-formed examples.");
+                    }
+                }
+            }
+        }
+    }
+    private static int sqlcompare(string a, string b) {
+        if (!double.TryParse(a, out double u)||!double.TryParse(b, out double v)) return 0;
+        return u.CompareTo(v);
+    }
+    public List<Tuple<int,int,int>> GetSatisfiers(State state) {
+        HashSet<(int,int,int)> union = new HashSet<(int,int,int)>();
+        foreach (var possib in SatExamples[state]) {
+            HashSet<(int,int,int)> intersection = null;
+            foreach (var component in possib) {
+                HashSet<(int,int,int)> miniunion = new HashSet<(int,int,int)>();
+                foreach (var row in component) {
+                    for (int x=0;x<row.Length;x++) {
+                        for (int y=x+1;y<row.Length;y++) {
+                            // Eq=0,
+                            // Neq=1
+                            // Lt=2,
+                            // Lteq=3,
+                            if (row[x]==row[y]) {
+                                miniunion.Add((0,x,y));
+                                // miniunion.Add((3,x,y));
+                                // miniunion.Add((3,y,x));
+                            } else {
+                                miniunion.Add((1,x,y));
+                                // if (sqlcompare(row[x],row[y])<0) miniunion.Add((2,x,y));
+                                // else if (sqlcompare(row[y],row[x])<0)miniunion.Add((2,y,x));
+                            }
+                        }
+                    }
+                }
+                if (intersection==null) intersection=miniunion;
+                else intersection.IntersectWith(miniunion);
+            }
+            union.UnionWith(intersection); 
+        }
+        var newunion = new List<Tuple<int,int,int>>();
+        foreach ((var a,var b,var c) in union) {
+            var j = new Tuple<int,int,int>(a,b,c);
+            if (LastTuple!=null) {
+                if ((LastTuple[state] as IComparable).CompareTo(j)<=0) continue;
+            }
+            newunion.Add(j);
+        }
+        Console.Out.WriteLine("found this many satisfiers: {0}",newunion.Count);
+        // Tuple<int,int,int> whatever = null;
+        // foreach (var hah in newunion) {
+        //     Console.Out.WriteLine("\t {0}",hah);
+        //     whatever=hah;
+        // }
+        // return new List<Tuple<int,int,int>>{whatever};
+        return newunion;
+    }
+    protected override bool CorrectOnProvided(State state,object obj) {
+        var lela = LastTuple==null?null:LastTuple[state];
+        var candidate = obj as List<Tuple<int,int,int>>;
+        foreach (var cand in candidate) {
+            if (lela!=null && (lela as IComparable).CompareTo(cand)<=0) return false;
+            lela = cand;
+        }
+        foreach (List<List<string[]>> possib in SatExamples[state]) {
+            var allsat = true;
+            foreach (List<string[]> component in possib) {
+                var onesat = false;
+                foreach (string[] row in component) {
+                    var rowworks = true;
+                    foreach (Tuple<int,int,int> criteria in candidate) {
+                        bool truth;
+                        switch (criteria.Item1) {
+                            case 0: truth = (row[criteria.Item2]==row[criteria.Item3]);break;// Eq=0,
+                            case 1: truth = (row[criteria.Item2]!=row[criteria.Item3]);break;// Neq=1,
+                            case 2: truth = (sqlcompare(row[criteria.Item2],row[criteria.Item3])<0);break;// Lt=2,
+                            case 3: truth = (sqlcompare(row[criteria.Item2],row[criteria.Item3])<0 || row[criteria.Item2]==row[criteria.Item3]);break;// Lteq=3
+                            default: throw new ArgumentException("invalid");
+                        }
+                        if (!truth) {rowworks=false;break;}
+                    }
+                    if (rowworks) {onesat=true;break;}
+                }
+                if (!onesat) {allsat=false;break;}
+            }
+            if (allsat) return true;
+        }
+        return false;
+    }
+
+
+
+    protected override int GetHashCodeOnInput(State state) {
+        if (LastTuple==null)
+        return this.SatExamples[state].GetHashCode();
+        return (this.SatExamples[state],this.LastTuple[state]).GetHashCode();
+    }
+    protected override Spec TransformInputs(Func<State, State> f) {
+        var result = new Dictionary<State, List<List<string[]>>[]>();
+        foreach (var input in this.SatExamples.Keys) {
+            result[f(input)] = this.SatExamples[input];
+        }
+        return new DisjunctiveCriteriaSatSpec(LastTuple,result);
+    }
+    protected override bool EqualsOnInput(State state,Spec spec) {
+        var other = spec as DisjunctiveCriteriaSatSpec;
+        if (other==null) return false;
+        if ((LastTuple==null)!=(other.LastTuple==null)) return false;
+        if (LastTuple!=null) {
+            if (LastTuple[state]!=other.LastTuple[state]) return false;
+        }
+        if (SatExamples[state].Length!=other.SatExamples[state].Length) return false;
+        for (int v=0;v<SatExamples[state].Length;v++) {//each possibility
+            if (SatExamples[state][v].Count!=other.SatExamples[state][v].Count) return false;
+            for (int u=0;u<SatExamples[state][v].Count;u++) {//each component
+                if (SatExamples[state][v][u].Count!=other.SatExamples[state][v][u].Count) return false;
+                for (int w=0;w<SatExamples[state][v][u].Count;w++) {//each option
+                    if (!SatExamples[state][v][u][w].SequenceEqual(other.SatExamples[state][v][u][w])) return false;
+                }
+            }
+        }
+        return true;
+    }
+    protected override XElement SerializeImpl(Dictionary<object, int> statespace, SpecSerializationContext context) {
+        throw new NotImplementedException();
+    }
+    protected override XElement InputToXML(State state,Dictionary<object, int> statespace) {
+        throw new NotImplementedException();
+    }
+}
+
+
+
+
+
 //This checks to see if there exists a mapping from space's rows to candidate's rows, and
 //space's columns to candidate's columns, such that for each element inside of space (row,column,value),
 //this holds:  candidate[rowmapping[row]][columnmapping[column]]==value
@@ -45,7 +194,6 @@ public class UniqueQueue<T> {
 class DisjunctiveDoubleFilteredTableSpec : Spec {
     public IDictionary<State, List<string[][]>[]> CustomTableExamples;
     public DisjunctiveDoubleFilteredTableSpec(IDictionary<State, List<string[][]>[]> CustomTableExamples): base(CustomTableExamples.Keys) {
-        // int colLen = -1;
         foreach (var w in CustomTableExamples) {
             if (w.Value.Length==0) throw new ArgumentException("No possibilities- null should be returned instead of creating a spec.");
             foreach (var v in w.Value) {
@@ -58,14 +206,29 @@ class DisjunctiveDoubleFilteredTableSpec : Spec {
                 }
             }
         }
-        // foreach (var w in CustomTableExamples) {
-        //     foreach (var v in w.Value) {
-        //         foreach (var u in v) {
-        //             if (u.Length!=colLen) throw new ArgumentException("Different disjunct possibilities have a different number of columns- this shouldn't arise.");
-        //         }
-        //     }
-        // }
         this.CustomTableExamples = CustomTableExamples;
+    }
+    public List<List<string[]>>[] GetFilterCriteria(State state,object obj) {
+        var candidate = obj as List<string[]>;
+        var settlepoints = GetSettlePoints(state,obj);
+        var result = new List<List<string[]>>[settlepoints.Count];
+        for (int i=0;i<settlepoints.Count;i++) {
+            var settle=settlepoints[i];
+            var rowcount = settle.GetLength(0);
+            var colcount = settle.GetLength(1);
+            var clumps = new List<List<string[]>>();
+            for  (int row=0;row<rowcount;row++) {
+                var intersection = new HashSet<int>();//eliminates duplicates
+                foreach ((int Row,int Col) in settle[row,0]) intersection.Add(Row);
+                var pos = new List<string[]>();
+                foreach (var ints in intersection) {
+                    pos.Add(Array.ConvertAll(candidate[ints],x=>x));
+                }
+                clumps.Add(pos);
+            }
+            result[i]=clumps;
+        }
+        return result;
     }
     public DisjunctiveDoubleFilteredTableSpec SplitColumnwise() {
         var inner = new Dictionary<State, List<string[][]>[]>();
@@ -104,7 +267,6 @@ class DisjunctiveDoubleFilteredTableSpec : Spec {
         return outp;
     }
     private List<List<(int Row,int Col)>[,]> GetSettleInitial(State state,object obj,bool abortOnEmpty) {
-        Console.Out.WriteLine("GetSettleInitial WAS CALLED!");
         var result = new List<List<(int Row,int Col)>[,]>();
         foreach (List<string[][]> space in this.CustomTableExamples[state]) {
             var candidate = obj as List<string[]>;
@@ -209,9 +371,7 @@ class DisjunctiveDoubleFilteredTableSpec : Spec {
     }
     private List<List<(int Row,int Col)>[,]> GetColumnwiseSettlePoints(State state,object obj) {
         var result = new List<List<(int Row,int Col)>[,]>();
-        Console.Out.WriteLine("calling GetColumnwiseSettlePoints....................................");
         foreach (List<(int Row,int Col)>[,] intermed in GetSettleInitial(state,obj,false)) {
-            Console.Out.WriteLine("yielding one");
             int rowcount = intermed.GetLength(0);
             int colcount = intermed.GetLength(1);
             for (int col=0;col<colcount;col++) {
@@ -352,12 +512,6 @@ class DisjunctiveDoubleFilteredTableSpec : Spec {
                 }
                 assignments = next;
             }
-            Console.Out.WriteLine("begin printing assignments:");
-            foreach (var assignment in assignments) {
-                var lines = assignment.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
-                Console.Out.WriteLine("assignment: {0}",string.Join(",", lines));
-            }
-
             var lastphase = new List<(HashSet<int> Remaining,List<HashSet<int>> RowAssignments)>();
             foreach (var assignment in assignments) {
                 int total = 0;
@@ -480,22 +634,18 @@ namespace ProseTutorial {
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         [WitnessFunction(nameof(Semantics.Project), 0)]
         internal DisjunctiveDoubleFilteredTableSpec WitnessProject1(GrammarRule rule, ExampleSpec spec) {
-            Console.Out.WriteLine("WITNESS PROJECT LEFT");
             return DisjunctiveDoubleFilteredTableSpec.FromConcrete(spec);
         }
         [WitnessFunction(nameof(Semantics.Order), 0)]
         internal DisjunctiveDoubleFilteredTableSpec WitnessOrder1(GrammarRule rule, DisjunctiveDoubleFilteredTableSpec spec) {
-            Console.Out.WriteLine("WITNESS ORDER LEFT");
             return spec;
         }
         [WitnessFunction(nameof(Semantics.Select), 0)]
         internal DisjunctiveDoubleFilteredTableSpec WitnessSelect1(GrammarRule rule, DisjunctiveDoubleFilteredTableSpec spec) {
-            Console.Out.WriteLine("WITNESS SELECT LEFT");
             return spec;
         }
         [WitnessFunction(nameof(Semantics.Join), 0)]
         internal DisjunctiveDoubleFilteredTableSpec WitnessJoin1(GrammarRule rule, DisjunctiveDoubleFilteredTableSpec spec) {
-            Console.Out.WriteLine("WITNESS JOIN LEFT");
             return spec.SplitColumnwise();
         }
         // [WitnessFunction(nameof(Semantics.Group), 0)]
@@ -509,9 +659,8 @@ namespace ProseTutorial {
         //Closing the spec object on the right is harder and always depends on the value on the left (for our application)
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         //for Project, checking to see that the example satisfies the spec results in a set of possible mappings. We yield this set.
-        [WitnessFunction(nameof(Semantics.Project), 1, DependsOnParameters = new[] { 0 })]
+        [WitnessFunction(nameof(Semantics.Project), 1, DependsOnParameters = new[] { 0 }, Verify = true)]
         internal DisjunctiveExamplesSpec WitnessProject2(GrammarRule rule, ExampleSpec spec, ExampleSpec leftValue) {
-            Console.Out.WriteLine("WITNESS PROJECT RIGHT");
             var result = new Dictionary<State, IEnumerable<object>>();
             foreach (var example in spec.Examples) {
                 State inputState = example.Key;
@@ -526,12 +675,70 @@ namespace ProseTutorial {
             }
             return new DisjunctiveExamplesSpec(result);
         }
+
+        //For select, we use the concrete value of the table on the left to spin off a different type of spec object on the right.
+        [WitnessFunction(nameof(Semantics.Select), 1, DependsOnParameters = new[] { 0 })]
+        internal DisjunctiveCriteriaSatSpec WitnessSelect2(GrammarRule rule, DisjunctiveDoubleFilteredTableSpec spec, ExampleSpec leftValue) {
+            var result = new Dictionary<State, List<List<string[]>>[]>();
+            foreach (var example in spec.CustomTableExamples) {
+                State inputState = example.Key;
+                result[inputState] = spec.GetFilterCriteria(inputState,leftValue.Examples[inputState]);
+            }
+            return new DisjunctiveCriteriaSatSpec(null,result);
+        }
+        //Ordering is similar to selecting.
+
+
+        [WitnessFunction(nameof(Semantics.One), 0)]
+        internal DisjunctiveExamplesSpec WitnessOne1(GrammarRule rule, DisjunctiveCriteriaSatSpec spec) {
+            Console.Out.WriteLine("Witness ONE left");
+            var result = new Dictionary<State, IEnumerable<object>>();
+            foreach (var example in spec.SatExamples) {
+                State inputState = example.Key;
+                var possiblecriterion = spec.GetSatisfiers(inputState);//ew List<Tuple<int,int,int>>{new Tuple<int,int,int>(0,0,0)};//
+                if (possiblecriterion.Count == 0) return null;
+                result[inputState] = possiblecriterion.Cast<object>();
+            }
+            return new DisjunctiveExamplesSpec(result);
+        }
+
+
+        // [WitnessFunction(nameof(Semantics.More), 0)]
+        // internal DisjunctiveExamplesSpec WitnessMore1(GrammarRule rule, DisjunctiveCriteriaSatSpec spec) {
+        //     Console.Out.WriteLine("Witness MORE left");
+        //     var result = new Dictionary<State, IEnumerable<object>>();
+        //     foreach (var example in spec.SatExamples) {
+        //         State inputState = example.Key;
+        //         var possiblecriterion = spec.GetSatisfiers(inputState);
+        //         if (possiblecriterion.Count == 0) return null;
+        //         result[inputState] = possiblecriterion.Cast<object>();
+        //     }
+        //     return new DisjunctiveExamplesSpec(result);
+        // }
+
+
+
+
+        // [WitnessFunction(nameof(Semantics.More), 1, DependsOnParameters = new[] { 0 })]
+        // internal DisjunctiveCriteriaSatSpec WitnessMore2(GrammarRule rule, DisjunctiveCriteriaSatSpec spec, ExampleSpec leftValue) {
+        //     Console.Out.WriteLine("Witness MORE right");
+        //     var result1 = new Dictionary<State, Tuple<int,int,int>>();
+        //     var result2 = new Dictionary<State, List<List<string[]>>[]>();
+        //     foreach (var example in spec.SatExamples) {
+        //         State inputState = example.Key;
+        //         result2[inputState] = example.Value;
+        //         result1[inputState] = leftValue.Examples[inputState] as Tuple<int,int,int>;
+        //     }
+        //     return new DisjunctiveCriteriaSatSpec(result1,result2);
+        // }
+
+
+
         //for the right side of join, a lot must be performed.
         //A simplified description is this: First, we take the example from the left and figure out how many columns it may satisfy.
         //Then, we take the remaining columns and append a column that corresponds to the joining column, and yeild that as the spec.
         [WitnessFunction(nameof(Semantics.Join), 2, DependsOnParameters = new[] { 0,1 })]
         internal DisjunctiveDoubleFilteredTableSpec WitnessJoin3(GrammarRule rule, DisjunctiveDoubleFilteredTableSpec spec, ExampleSpec leftValue,ExampleSpec firstcolumn) {
-            Console.Out.WriteLine("WITNESS JOIN RIGHT");
             var result = new Dictionary<State, List<string[][]>[]>();
             foreach (var example in spec.CustomTableExamples) {
                 State inputState = example.Key;
@@ -544,7 +751,6 @@ namespace ProseTutorial {
         // //the right column of join is retrieved in a similar fashion to WitnessProject2.
         [WitnessFunction(nameof(Semantics.Join), 3, DependsOnParameters = new[] { 0,1,2 })]
         internal DisjunctiveExamplesSpec WitnessJoin4(GrammarRule rule, DisjunctiveDoubleFilteredTableSpec spec, ExampleSpec leftValue,ExampleSpec firstcolumn,ExampleSpec rightValue) {
-            Console.Out.WriteLine("WITNESS JOIN RIGHT COLUMN");
             var result = new Dictionary<State, IEnumerable<object>>();
             foreach (var example in spec.CustomTableExamples) {
                 State inputState = example.Key;
@@ -564,9 +770,21 @@ namespace ProseTutorial {
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         [WitnessFunction(nameof(Semantics.Named), 1, Verify=true)]//this one is checked by verify=True
         internal DisjunctiveExamplesSpec WitnessNamed2(GrammarRule rule, DisjunctiveDoubleFilteredTableSpec spec) {
-            Console.Out.WriteLine("WITNESS NAMED");
             var result = new Dictionary<State, IEnumerable<object>>();
             foreach (var example in spec.CustomTableExamples) {
+                State inputState = example.Key;
+                var ks = new List<int>();
+                var x = inputState[rule.Body[0]] as List<List<string[]>>;
+                for (int h=0;h<x.Count;h++) ks.Add(h);
+                if (ks.Count == 0) return null;
+                result[inputState] = ks.Cast<object>();
+            }
+            return new DisjunctiveExamplesSpec(result);
+        }
+        [WitnessFunction(nameof(Semantics.Named), 1, Verify=true)]//this one is checked by verify=True
+        internal DisjunctiveExamplesSpec WitnessNamed2(GrammarRule rule, ExampleSpec spec) {
+            var result = new Dictionary<State, IEnumerable<object>>();
+            foreach (var example in spec.Examples) {
                 State inputState = example.Key;
                 var ks = new List<int>();
                 var x = inputState[rule.Body[0]] as List<List<string[]>>;
@@ -579,7 +797,6 @@ namespace ProseTutorial {
         //for the left column of join, we just yield each possible column, and the answer gets checked by witness functions 3 and 4 of join.
         [WitnessFunction(nameof(Semantics.Join), 1, DependsOnParameters = new[] { 0 })]
         internal DisjunctiveExamplesSpec WitnessJoin2(GrammarRule rule, DisjunctiveDoubleFilteredTableSpec spec, ExampleSpec leftValue) {
-            Console.Out.WriteLine("WITNESS JOIN LEFT COLUMN");
             var result = new Dictionary<State, IEnumerable<object>>();
             foreach (var example in spec.CustomTableExamples) {
                 State inputState = example.Key;
@@ -606,6 +823,14 @@ namespace ProseTutorial {
         [WitnessFunction(nameof(Semantics.N4), 0)]
         internal DisjunctiveDoubleFilteredTableSpec WitnessN4(GrammarRule rule, DisjunctiveDoubleFilteredTableSpec spec) {return spec;}
 
+        [WitnessFunction(nameof(Semantics.N1), 0)]
+        internal ExampleSpec WitnessN1(GrammarRule rule, ExampleSpec spec) {return spec;}
+        [WitnessFunction(nameof(Semantics.N2), 0)]
+        internal ExampleSpec WitnessN2(GrammarRule rule, ExampleSpec spec) {return spec;}
+        [WitnessFunction(nameof(Semantics.N3), 0)]
+        internal ExampleSpec WitnessN3(GrammarRule rule, ExampleSpec spec) {return spec;}
+        [WitnessFunction(nameof(Semantics.N4), 0)]
+        internal ExampleSpec WitnessN4(GrammarRule rule, ExampleSpec spec) {return spec;}
     }
 }
 

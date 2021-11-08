@@ -1,7 +1,15 @@
 ﻿using System.Collections.Generic;
+using System;
 
-namespace ProseTutorial
-{    public static class Semantics {
+namespace ProseTutorial {
+
+    public static class Semantics {
+        public enum BinopCode {
+            Eq=0,
+            Neq=1,
+            Lt=2,
+            Lteq=3,
+        }
         private static int sqlcompare(string a, string b) {
             if (!double.TryParse(a, out double u)||!double.TryParse(b, out double v)) return 0;
             return u.CompareTo(v);
@@ -19,7 +27,8 @@ namespace ProseTutorial
             return result;
         }
         public static List<string[]> Order(List<string[]> subq,List<int> keys) {
-            subq.Sort(delegate(string[] c1, string[] c2) {
+            var subq2 = subq.ConvertAll(x=>x);
+            subq2.Sort(delegate(string[] c1, string[] c2) {
                 foreach (int k in keys) {
                     var key = k;
                     if (key<0) {
@@ -35,10 +44,27 @@ namespace ProseTutorial
                 }
                 return 0;
             });
-            return subq;
+            return subq2;
         }
-        public static List<string[]> Select(List<string[]> subq) {
-            return subq;
+        public static List<string[]> Select(List<string[]> subq,List<Tuple<int,int,int>> filters) {
+            // Console.Out.WriteLine("SEMANTICS FOR SELECT CALLED");
+            var subq2 = new List<string[]>();
+            foreach (var row in subq) {
+                var rowworks = true;
+                foreach (var criteria in filters) {
+                    bool truth;
+                    switch (criteria.Item1) {
+                        case 0: truth = (row[criteria.Item2]==row[criteria.Item3]);break;// Eq=0,
+                        case 1: truth = (row[criteria.Item2]!=row[criteria.Item3]);break;// Neq=1,
+                        case 2: truth = (sqlcompare(row[criteria.Item2],row[criteria.Item3])<0);break;// Lt=2,
+                        case 3: truth = (sqlcompare(row[criteria.Item2],row[criteria.Item3])<0 || row[criteria.Item2]==row[criteria.Item3]);break;// Lteq=3
+                        default: throw new ArgumentException("invalid");
+                    }
+                    if (!truth) {rowworks=false;break;}
+                }
+                if (rowworks) subq2.Add(row);
+            }
+            return subq2;
         }
         public static List<string[]> Join(List<string[]> subq1,int a_col,List<string[]> subq2,int b_col) {
             var result = new List<string[]>();
@@ -130,5 +156,9 @@ namespace ProseTutorial
         public static List<string[]> N2(List<string[]> a) {return a;}
         public static List<string[]> N3(List<string[]> a) {return a;}
         public static List<string[]> N4(List<string[]> a) {return a;}
+
+        public static List<Tuple<int,int,int>> One(Tuple<int,int,int> a) {return new List<Tuple<int,int,int>>{a};}
+        public static List<Tuple<int,int,int>> More(Tuple<int,int,int> a,List<Tuple<int,int,int>> b) {b.Add(a);return b;}
+
     }
 }

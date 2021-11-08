@@ -24,23 +24,18 @@ namespace ProseTutorial
         }
 
 
-
         [FeatureCalculator(nameof(Semantics.Order))]
         public static double Order(double a,double u) {
             return a;
         }
         [FeatureCalculator(nameof(Semantics.Select))]
-        public static double Select(double a) {
-            return a;
+        public static double Select(double a,double b) {
+            return a+b;
         }
         [FeatureCalculator(nameof(Semantics.Join))]
         public static double Join(double a,double wa,double b,double wb) {
             return a+b-1;
         }
-        // [FeatureCalculator(nameof(Semantics.LeftJoin))]
-        // public static double LeftJoin(double a,double wa,double b,double wb) {
-        //     return a+b;
-        // }
         [FeatureCalculator(nameof(Semantics.Group))]
         public static double Group(double a,double u,double v) {
             return a+u+v;
@@ -59,7 +54,10 @@ namespace ProseTutorial
 
 
 
-
+        [FeatureCalculator(nameof(Semantics.One))]
+        public static double One(double a) {return -1;}
+        [FeatureCalculator(nameof(Semantics.More))]
+        public static double More(double a,double b) {return a+b-1;}
 
 
         [FeatureCalculator("tableIndex", Method = CalculationMethod.FromLiteral)]
@@ -78,5 +76,7 @@ namespace ProseTutorial
         public static double groupingColumns() { return 0; }
         [FeatureCalculator("groupingAggregations")]
         public static double groupingAggregations() { return 0; }
+        [FeatureCalculator("filterCriteria")]
+        public static double filterCriteria() { return -1; }
     }
 }
