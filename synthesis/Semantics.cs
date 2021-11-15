@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 
-namespace ProseTutorial {
+namespace Rest560 {
 
     public static class Semantics {
         public enum BinopCode {

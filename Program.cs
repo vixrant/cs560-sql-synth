@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using Microsoft.ProgramSynthesis;
+﻿using Microsoft.ProgramSynthesis;
 using Microsoft.ProgramSynthesis.AST;
 using Microsoft.ProgramSynthesis.Compiler;
 using Microsoft.ProgramSynthesis.Learning;
@@ -11,19 +6,29 @@ using Microsoft.ProgramSynthesis.Learning.Strategies;
 using Microsoft.ProgramSynthesis.Specifications;
 using Microsoft.ProgramSynthesis.VersionSpace;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
+
+/// <summary> Defines the name of a table and list of columns that it contains. </summary>
 public class TableSchema
 {
     public string name { get; set; }
     public IList<string> columns { get; set; }
 }
+
+
+/// <summary> Input: Tables, Output: string? </summary>
 public class ExampleSchema
 {
     public IList<TableSchema> inputs { get; set; }
     public IList<string> output { get; set; }
 }
 
-namespace ProseTutorial
+namespace Rest560
 {
     internal class Program
     {
@@ -32,11 +37,10 @@ namespace ProseTutorial
             InputGrammarText = File.ReadAllText("synthesis/grammar/substring.grammar"),
             References = CompilerReference.FromAssemblyFiles(typeof(Program).GetTypeInfo().Assembly)
         }).Value;
-
+        private static readonly Dictionary<State, object> Examples = new Dictionary<State, object>();
         private static SynthesisEngine _prose;
 
-        private static readonly Dictionary<State, object> Examples = new Dictionary<State, object>();
-        private static ProgramNode _topProgram;
+        private static ProgramNode _topFirstProgram;
         public static SynthesisEngine ConfigureSynthesis()
         {
             var witnessFunctions = new WitnessFunctions(Grammar);
@@ -49,15 +53,16 @@ namespace ProseTutorial
 
         private static List<string[]> parsefile(string filename)
         {
-            List<string[]> filecontents = new List<string[]>();
-            using (StreamReader reader = new StreamReader(filename))
+            var filecontents = new List<string[]>();
+            var CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
+            using (var reader = new StreamReader(filename))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    Regex CSVParser = new Regex(",(?=(?:[^\"]*\"[^\"]*\")*(?![^\"]*\"))");
                     var arr = CSVParser.Split(line);
-                    for (int i = 0; i < arr.Length; i++) arr[i] = arr[i].Trim();
+                    for (int i = 0; i < arr.Length; i++)
+                        arr[i] = arr[i].Trim();
                     if (filecontents.Count == 0 || arr.Length == filecontents[0].Length)
                         filecontents.Add(CSVParser.Split(line));
                 }
@@ -65,13 +70,13 @@ namespace ProseTutorial
             return filecontents;
         }
 
-        /**
-        Program can take input either from command line or using a prompt.
-        If the input directory doesn't exist, or the schema.json file is missing, then
-        we throw an InvalidOperationException to notify that the we cannot synthesize
-        a program for that directory.
-        */
-        private static string getInput(string[] args)
+        /// <summary>
+        /// Program can take input either from command line or using a prompt.
+        /// If the input directory doesn't exist, or the schema.json file is missing, then
+        /// we throw an InvalidOperationException to notify that the we cannot synthesize
+        /// a program for that directory.
+        /// </summary>
+        private static Tuple<string, string> getInputDirectory(string[] args)
         {
             string input;
 
@@ -88,42 +93,59 @@ namespace ProseTutorial
             if (!Directory.Exists(input))
                 throw new InvalidOperationException("Invalid input: {0} isn't a directory" + input);
 
-            string schemapath = Path.Combine(new String[] { input, "schema.json" });
+            var schemaPath = Path.Combine(new String[] { input, "schema.json" });
 
-            if (!File.Exists(schemapath))
-                throw new InvalidOperationException("Invalid input: {0} doesn't exist" + schemapath);
+            if (!File.Exists(schemaPath))
+                throw new InvalidOperationException("Invalid input: {0} doesn't exist" + schemaPath);
 
-            return input;
+            return Tuple.Create(input, schemaPath);
         }
 
         private static void Main(string[] args)
         {
             _prose = ConfigureSynthesis();
-            var input = getInput(args);
+            var inputDirectory = getInputDirectory(args);
+            var input = inputDirectory.Item1;
+            var schemaPath = inputDirectory.Item2;
 
-            ExampleSchema schema = JsonConvert.DeserializeObject<ExampleSchema>(File.ReadAllText(schemapath));
-            foreach (string subfile in Directory.GetDirectories(input))
+            var schema = JsonConvert.DeserializeObject<ExampleSchema>(File.ReadAllText(schemaPath));
+            foreach (var subfile in Directory.GetDirectories(input))
             {
-                List<List<string[]>> intables = new List<List<string[]>>();
-                foreach (TableSchema tableschema in schema.inputs)
+                // Inputs
+                var inTables = new List<List<string[]>>();
+                foreach (var tableSchema in schema.inputs)
                 {
-                    string inputpath = Path.Combine(new String[] { subfile, "input_tables", tableschema.name + ".csv" });
-                    if (!File.Exists(inputpath)) { Console.Out.WriteLine("Required file not found: {0} doesn't exist", inputpath); return; }
-                    intables.Add(parsefile(inputpath));
+                    var inputpath = Path.Combine(new String[] { subfile, "input_tables", tableSchema.name + ".csv" });
+                    if (!File.Exists(inputpath))
+                    {
+                        Console.Out.WriteLine("Required file not found: {0} doesn't exist", inputpath);
+                        return;
+                    }
+                    inTables.Add(parsefile(inputpath));
                 }
-                string outputpath = Path.Combine(new String[] { subfile, "output_table.csv" });
-                if (!File.Exists(outputpath)) { Console.Out.WriteLine("Required file not found: {0} doesn't exist", outputpath); return; }
-                List<string[]> outable = parsefile(outputpath);
-                State inputState = State.CreateForExecution(Grammar.InputSymbol, intables);
-                Examples.Add(inputState, outable);
+
+                // Outputs
+                var outputPath = Path.Combine(new String[] { subfile, "output_table.csv" });
+                if (!File.Exists(outputPath))
+                {
+                    Console.Out.WriteLine("Required file not found: {0} doesn't exist", outputPath);
+                    return;
+                }
+
+                var inputState = State.CreateForExecution(Grammar.InputSymbol, inTables);
+                var outputState = parsefile(outputPath);
+                Examples.Add(inputState, outputState);
             }
 
-            var spec = new ExampleSpec(Examples);
+            // Learning
             Console.Out.WriteLine("Learning a program for {0} examples...", Examples.Count);
+            var spec = new ExampleSpec(Examples);
             var scoreFeature = new RankingScore(Grammar);
-            ProgramSet topPrograms = _prose.LearnGrammarTopK(spec, scoreFeature, 1, null);
-            if (topPrograms.IsEmpty) throw new Exception("No program was found for this specification.");
-            _topProgram = topPrograms.RealizedPrograms.First();
+            var topPrograms = _prose.LearnGrammarTopK(spec, scoreFeature, 1, null);
+            if (topPrograms.IsEmpty)
+                throw new Exception("No program was found for this specification.");
+            _topFirstProgram = topPrograms.RealizedPrograms.First();
+
             Console.Out.WriteLine("Top 4 learned programs:");
             var counter = 1;
             foreach (ProgramNode program in topPrograms.RealizedPrograms)
@@ -136,29 +158,26 @@ namespace ProseTutorial
             }
         }
 
-        private static void RunOnNewInput()
-        {
-            if (_topProgram == null)
-                throw new Exception("No program was synthesized. Try to provide new examples first.");
-            Console.Out.WriteLine("Top program: {0}", _topProgram);
+        
+        // From tutorial, a function that executes programs on new input.
+        // Not for this project.
+        //
+        // private static void RunOnNewInput()
+        // {
+        //     if (_topFirstProgram == null)
+        //         throw new Exception("No program was synthesized. Try to provide new examples first.");
+        //     Console.Out.WriteLine("Top program: {0}", _topFirstProgram);
 
-            try
-            {
-                Console.Out.Write("Insert a new input: ");
-                string newInput = Console.ReadLine();
-                if (newInput != null)
-                {
-                    int startFirstExample = newInput.IndexOf("\"", StringComparison.Ordinal) + 1;
-                    int endFirstExample = newInput.IndexOf("\"", startFirstExample + 1, StringComparison.Ordinal) + 1;
-                    newInput = newInput.Substring(startFirstExample, endFirstExample - startFirstExample - 1);
-                    State newInputState = State.CreateForExecution(Grammar.InputSymbol, newInput);
-                    Console.Out.WriteLine("RESULT: \"{0}\" -> \"{1}\"", newInput, _topProgram.Invoke(newInputState));
-                }
-            }
-            catch (Exception)
-            {
-                throw new Exception("The execution of the program on this input thrown an exception");
-            }
-        }
+        //     Console.Out.Write("Insert a new input: ");
+        //     var newInput = Console.ReadLine();
+        //     if (newInput != null)
+        //     {
+        //         int startFirstExample = newInput.IndexOf("\"", StringComparison.Ordinal) + 1;
+        //         int endFirstExample = newInput.IndexOf("\"", startFirstExample + 1, StringComparison.Ordinal) + 1;
+        //         newInput = newInput.Substring(startFirstExample, endFirstExample - startFirstExample - 1);
+        //         State newInputState = State.CreateForExecution(Grammar.InputSymbol, newInput);
+        //         Console.Out.WriteLine("RESULT: \"{0}\" -> \"{1}\"", newInput, _topFirstProgram.Invoke(newInputState));
+        //     }
+        // }
     }
 }
