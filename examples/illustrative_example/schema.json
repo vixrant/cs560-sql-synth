@@ -1,0 +1,14 @@
+{
+    "inputs": [{
+        "name": "employees",
+        "columns": [
+            "employee",
+            "department",
+            "salary",
+        ]
+    }],
+    "output": [
+        "employee",
+        "salary"
+    ]
+}

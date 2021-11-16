@@ -1,9 +1,9 @@
-﻿using semantics ProseTutorial.Semantics;
-using learners ProseTutorial.WitnessFunctions;
+﻿using semantics Rest560.Semantics;
+using learners Rest560.WitnessFunctions;
 
 language REST;
 
-@complete feature double Score = ProseTutorial.RankingScore;
+@complete feature double Score = Rest560.RankingScore;
 
 @input List<List<string[]>> InputTables;
 
