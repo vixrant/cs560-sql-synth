@@ -26,13 +26,11 @@ namespace ProseTutorial {
             }
             return result;
         }
-        public static List<string[]> Order(List<string[]> subq,List<int> keys) {
+        public static List<string[]> Order(List<string[]> subq,List<Tuple<int,bool>> keys) {
             var subq2 = subq.ConvertAll(x=>x);
             subq2.Sort(delegate(string[] c1, string[] c2) {
-                foreach (int k in keys) {
-                    var key = k;
-                    if (key<0) {
-                        key=1-key;
+                foreach ((int key,bool direction) in keys) {
+                    if (direction) {
                         var cmp = sqlcompare(c1[key],c2[key]);
                         if (cmp==0) continue;
                         return cmp;
@@ -112,7 +110,7 @@ namespace ProseTutorial {
         //     }
         //     return result;
         // }
-        public static List<string[]> Group(List<string[]> subq,List<int> groupby,List<int> aggregations) {
+        public static List<string[]> Group(List<string[]> subq,List<int> groupby,Tuple<int,bool> aggregations) {
             var result = new List<string[]>();
             for (int row=0;row<subq.Count;row++) {
                 var found = false;
@@ -123,22 +121,13 @@ namespace ProseTutorial {
                     }
                     if (samerec) {
                         found = true;
-                        var firstit = true;//there's some weird niche SQL semantics that i'm emulating here
-                        for (int a=aggregations.Count-1;a>=0;a--) {
-                            var ag = aggregations[a];
-                            var reversed = 1;
-                            if (ag<0) {
-                                reversed = -1;
-                                ag=1-ag;
-                            }
-                            if (sqlcompare(result[lessrow][ag],subq[row][ag])*reversed<0) {
-                                if (firstit) {
-                                    result[lessrow] = subq[row].Clone() as string[];
-                                } else {
-                                    result[lessrow][ag] = subq[row][ag];
-                                }
-                            }
-                            firstit = false;
+                        var ag = aggregations.Item1;
+                        var reversed = 1;
+                        if (aggregations.Item2) {
+                            reversed = -1;
+                        }
+                        if (sqlcompare(result[lessrow][ag],subq[row][ag])*reversed<0) {
+                            result[lessrow] = subq[row].Clone() as string[];
                         }
                         break;
                     }
@@ -159,6 +148,9 @@ namespace ProseTutorial {
 
         public static List<Tuple<int,int,int>> One(Tuple<int,int,int> a) {return new List<Tuple<int,int,int>>{a};}
         public static List<Tuple<int,int,int>> More(Tuple<int,int,int> a,List<Tuple<int,int,int>> b) {b.Add(a);return b;}
+
+        public static List<Tuple<int,bool>> OneKey(Tuple<int,bool> a) {return new List<Tuple<int,bool>>{a};}
+        public static List<Tuple<int,bool>> MoreKey(Tuple<int,bool> a,List<Tuple<int,bool>> b) {b.Add(a);return b;}
 
     }
 }

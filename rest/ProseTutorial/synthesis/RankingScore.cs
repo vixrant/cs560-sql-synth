@@ -58,6 +58,10 @@ namespace ProseTutorial
         public static double One(double a) {return -1;}
         [FeatureCalculator(nameof(Semantics.More))]
         public static double More(double a,double b) {return a+b-1;}
+        [FeatureCalculator(nameof(Semantics.OneKey))]
+        public static double OneKey(double a) {return -1;}
+        [FeatureCalculator(nameof(Semantics.MoreKey))]
+        public static double MoreKey(double a,double b) {return a+b-1;}
 
 
         [FeatureCalculator("tableIndex", Method = CalculationMethod.FromLiteral)]
@@ -70,12 +74,10 @@ namespace ProseTutorial
         [FeatureCalculator("joiningRightColumn")]
         public static double joiningRightColumn() { return 0; }
 
-        [FeatureCalculator("sortingCriteria")]
-        public static double sortingCriteria() { return 0; }
+        [FeatureCalculator("sortCriteria")]
+        public static double sortCriteria() { return -1; }
         [FeatureCalculator("groupingColumns")]
         public static double groupingColumns() { return 0; }
-        [FeatureCalculator("groupingAggregations")]
-        public static double groupingAggregations() { return 0; }
         [FeatureCalculator("filterCriteria")]
         public static double filterCriteria() { return -1; }
     }

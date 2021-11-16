@@ -12,7 +12,7 @@ language REST;
     | N1(Tier2Table);
 
 List<string[]> Tier2Table :=
-    Order(Tier3Table,sortingCriteria)
+    Order(Tier3Table,SortKeys)
     | N2(Tier3Table);
 
 List<Tuple<int,int,int>> Criteria :=
@@ -20,6 +20,10 @@ List<Tuple<int,int,int>> Criteria :=
     //| More(filterCriteria,@recurse[1] Criteria);
     //the first integer in the triple is an input to a binary operator enum.
     //this lets us yield directly the set of possibilities with just one disjuntive examples spec.
+
+List<Tuple<int,bool>> SortKeys :=
+    OneKey(sortCriteria)
+    | MoreKey(sortCriteria,@recurse[5] SortKeys);
     
 List<string[]> Tier3Table :=
     Select(Tier4Table,Criteria)
@@ -31,16 +35,12 @@ List<string[]> Tier4Table :=
 
 List<string[]> Tier5Table :=
     Named(InputTables,tableIndex)
-    //| Group(Tier3Table,groupingColumns,groupingAggregations)
+    //| Group(Tier3Table,groupingColumns,sortCriteria)
 
 Tuple<int,int,int> filterCriteria;
+Tuple<int,bool> sortCriteria;
 int joiningLeftColumn;
 int joiningRightColumn;
 int tableIndex;
 List<int> projectionList;
-//a note for sortingCriteria and groupingAggregations:
-//    positive numbers correspond to sorting the nth column in descending order.
-//    negative numbers correspond to sorting the (1-n)th column in ascending order.
-List<int> sortingCriteria;
 List<int> groupingColumns;//properties to group by
-List<int> groupingAggregations;//aggregations within groups
