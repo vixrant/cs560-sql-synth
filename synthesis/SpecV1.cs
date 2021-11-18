@@ -16,21 +16,7 @@ using System.Collections.ObjectModel;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-namespace Rest560SpecV1
-{
-
+namespace Rest560SpecV1 {
     public class UniqueQueue<T> {
         private HashSet<T> hashSet;
         private Queue<T> queue;
@@ -48,9 +34,6 @@ namespace Rest560SpecV1
     }
 
 
-
-
-
     class PossibleOrderingsSpec : Spec {
         public IDictionary<State, (List<List<string[]>>[] Examples,HashSet<int> Available)> OrdExamples;
         public PossibleOrderingsSpec(IDictionary<State, (List<List<string[]>>[] Examples,HashSet<int> Available)> OrdExamples): base(OrdExamples.Keys) {
@@ -58,7 +41,6 @@ namespace Rest560SpecV1
             foreach (var w in OrdExamples) {
                 if (w.Value.Item1.Length==0) throw new ArgumentException("No possibilities- null should be returned instead of creating a spec.");
                 foreach (var v in w.Value.Item1) {
-                    if (v.Count==0) throw new ArgumentException("No components- this isn't supported and shouldn't arise from well-formed examples.");
                     foreach (var u in v) {
                         if (u.Count==0) throw new ArgumentException("No rows in the component- this isn't supported and shouldn't arise from well-formed examples.");
                         foreach (var j in u) {
@@ -68,9 +50,29 @@ namespace Rest560SpecV1
                 }
             }
         }
-        // public (List<List<string[]>>[] Examples,HashSet<int> Available) sortBy(Tuple<int,bool> sortkey) {
-            
-        // }
+        public (List<List<string[]>>[] Examples,HashSet<int> Available) sortBy(State state,Tuple<int,bool> candidate) {
+            var dup = new HashSet<int>(OrdExamples[state].Available);
+            dup.Remove(candidate.Item1);
+            var result = new List<List<string[]>>[OrdExamples[state].Examples.Length];
+            for (int p=0;p<result.Length;p++) {
+                var semiresult = new List<List<string[]>>();
+                foreach (var component in OrdExamples[state].Examples[p]) {
+                    var semisemiresult = new List<string[]>();
+                    for (int row=0;row<component.Count-1;row++) {
+                        semisemiresult.Add(component[row]);
+                        int cmp = sqlordcompare(component[row][candidate.Item1],component[row+1][candidate.Item1]);
+                        if (cmp!=0) {
+                            if (semiresult.Count>1) semiresult.Add(semisemiresult);
+                            semisemiresult = new List<string[]>();
+                        }
+                    }
+                    semisemiresult.Add(component[component.Count-1]);
+                    if (semiresult.Count>1) semiresult.Add(semisemiresult);
+                }
+                result[p] = semiresult;
+            }
+            return (result,dup);
+        }
         private static int sqlordcompare(string a, string b) {
             if (!double.TryParse(a, out double u)||!double.TryParse(b, out double v)) return a.CompareTo(b);
             return u.CompareTo(v);
@@ -413,7 +415,7 @@ namespace Rest560SpecV1
                     for (int col=0;col<colcount;col++) {
                         var imd = new List<(int Row,int Col)>();
                         intermed[row,col] = imd;
-                        foreach (string pos in space[0][col]) {
+                        foreach (string pos in space[row][col]) {
                             List<(int Row,int Col)> govr = null;
                             if (governhash.TryGetValue(pos,out govr)) {
                                 foreach ((int,int) bs in govr) imd.Add(bs);
@@ -424,6 +426,7 @@ namespace Rest560SpecV1
                     if (fullbreak) break;
                 }
                 if (fullbreak) continue;
+
                 result.Add(intermed);
             }
             return result;
@@ -526,6 +529,114 @@ namespace Rest560SpecV1
         protected override bool CorrectOnProvided(State state,object obj) {
             return GetSettlePoints(state,obj).Count>0;
         }
+
+
+        public List<List<int>> extractSingleRowMaps(State state,object obj) {
+            var result = new List<List<int>>();
+            foreach (var settle in GetSettlePoints(state,obj)) {
+                int rowcount = settle.GetLength(0);
+                int colcount = settle.GetLength(1);
+                if (rowcount!=(obj as List<string[]>).Count) continue;
+                // for (int row=0;row<rowcount;row++) {
+                //     for (int col=0;col<colcount;col++) {
+                //         Console.Out.Write("{0}|",String.Join(",",settle[row,col]));
+                //     }
+                //     Console.Out.WriteLine();
+                // }
+                HashSet<int>[] rowconv = new HashSet<int>[rowcount];
+                var workqueue = new UniqueQueue<int>();
+                for (int i=0;i<rowcount;i++) {
+                    workqueue.Enqueue(i);
+                    rowconv[i] = new HashSet<int>();
+                    // Console.Out.WriteLine("{0} {1}",i,String.Join(",",settle[i,0]));
+                    foreach ((int Row,int Col) in settle[i,0]) rowconv[i].Add(Row);
+                }
+                Console.Out.WriteLine();
+                bool ok = true;
+                while (workqueue.Count>0) {
+                    while (workqueue.Count>0) {
+                        var i = workqueue.Dequeue();
+                        // Console.Out.WriteLine(String.Join(",",rowconv[i]));
+                        // continue;
+                        if (rowconv[i].Count!=1) continue;
+                        int spec = rowconv[i].First();
+                        for (int j=0;j<rowcount;j++) {
+                            if (j==i) continue;
+                            if (rowconv[j].Remove(spec)) {
+                                if (rowconv[j].Count==0) ok=false;
+                                if (rowconv[j].Count==1) workqueue.Enqueue(j);
+                            }
+                        }
+                    } 
+                    // ok=false;
+                    if (!ok) break;
+
+                    var dualworkqueue = new UniqueQueue<int>();
+                    for (int i=0;i<rowcount;i++) {
+                        if (rowconv[i].Count!=1) {
+                            // Console.Out.WriteLine(String.Join(",",rowconv[i]));
+                            foreach (int cand in rowconv[i]) dualworkqueue.Enqueue(cand);
+                        }
+                    }
+
+                    while (dualworkqueue.Count>0) {
+                        var i = dualworkqueue.Dequeue();
+                        int total = 0;
+                        int onefound = -1;
+                        for (int j=0;j<rowcount;j++) {
+                            if (rowconv[j].Contains(i)) {
+                                onefound=j;
+                                total+=1;
+                            }
+                        }
+                        if (total==0) ok=false;
+                        if (total==1) {
+                            rowconv[onefound].RemoveWhere(x=>{
+                                if (x!=i) {
+                                    dualworkqueue.Enqueue(x);
+                                    return true;
+                                }
+                                return false;
+                            });
+                        }
+                    }
+                    if (!ok) break;
+                    for (int i=0;i<rowcount;i++) {
+                        if (rowconv[i].Count!=1) {
+                            //pick a winner arbitrarily:
+                            //   this is theoretically unsound but rectifying it would involve making the ordering spec much more complicated
+                            //   it only arises in cases where you're ordering by a column that wasn't selected, and there are also duplicate rows in the expected table.
+                            //   it's basically never going to arise in normal usage of this tool, but i'd fix it if this were a longer term project.
+                            rowconv[i] = new HashSet<int>{rowconv[i].Min()};
+                            workqueue.Enqueue(i);
+                            break;
+                        }
+                    }
+                }
+                if (!ok) continue;
+                Console.Out.WriteLine("well, one was deemed ok");
+                var semiresult = new List<int>();
+                foreach (var conv in rowconv) semiresult.Add(conv.First());
+                result.Add(semiresult);
+            }
+            return result;
+        }
+
+
+        public (List<List<string[]>>[] Examples,HashSet<int> Available) prepareOrderingSpec(State state,object obj) {
+            var singleRowMaps = extractSingleRowMaps(state,obj);
+            var av = new HashSet<int>();
+            var candidate = obj as List<string[]>;
+            for (int i=0;i<candidate[0].Length;i++) av.Add(i);
+            var examples = new List<List<string[]>>[singleRowMaps.Count];
+            for (int ex=0;ex<examples.Length;ex++) {
+                var innerlist = new List<string[]>();
+                foreach (int ax in singleRowMaps[ex]) innerlist.Add(candidate[ax]);
+                examples[ex] = new List<List<string[]>>{innerlist};
+            }
+            return (examples,av);
+        }
+
         public List<int> extractPossibleSingularLastColumnMappings(State state,object obj) {
             var result = new List<int>{};
             foreach (var settle in GetSettlePoints(state,obj)) {

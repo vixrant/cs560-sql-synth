@@ -77,11 +77,26 @@ namespace Rest560
             return new DisjunctiveCriteriaSatSpec(null,result);
         }
         //Ordering is similar to selecting.
+        [WitnessFunction(nameof(Semantics.Order), 1, DependsOnParameters = new[] { 0 })]
+        internal PossibleOrderingsSpec WitnessOrder2(GrammarRule rule, DisjunctiveDoubleFilteredTableSpec spec, ExampleSpec leftValue) {
+            Console.Out.WriteLine("Witness ORDER right");
+            var result = new Dictionary<State, (List<List<string[]>>[] Examples,HashSet<int> Available)>();
+            foreach (var example in spec.CustomTableExamples) {
+                State inputState = example.Key;
+                result[inputState] = spec.prepareOrderingSpec(inputState,leftValue.Examples[inputState]);
+                if (result[inputState].Item1.Length==0) {
+                    // Console.Out.WriteLine("a little worrying?");
+                    return null;
+                } else {
+                    Console.Out.WriteLine("well, one passed");
+                }
+            }
+            return new PossibleOrderingsSpec(result);
+        }
 
 
         [WitnessFunction(nameof(Semantics.One), 0)]
         internal DisjunctiveExamplesSpec WitnessOne1(GrammarRule rule, DisjunctiveCriteriaSatSpec spec) {
-            Console.Out.WriteLine("Witness ONE left");
             var result = new Dictionary<State, IEnumerable<object>>();
             foreach (var example in spec.SatExamples) {
                 State inputState = example.Key;
@@ -91,8 +106,6 @@ namespace Rest560
             }
             return new DisjunctiveExamplesSpec(result);
         }
-
-
         // [WitnessFunction(nameof(Semantics.More), 0)]
         // internal DisjunctiveExamplesSpec WitnessMore1(GrammarRule rule, DisjunctiveCriteriaSatSpec spec) {
         //     Console.Out.WriteLine("Witness MORE left");
@@ -105,10 +118,6 @@ namespace Rest560
         //     }
         //     return new DisjunctiveExamplesSpec(result);
         // }
-
-
-
-
         // [WitnessFunction(nameof(Semantics.More), 1, DependsOnParameters = new[] { 0 })]
         // internal DisjunctiveCriteriaSatSpec WitnessMore2(GrammarRule rule, DisjunctiveCriteriaSatSpec spec, ExampleSpec leftValue) {
         //     Console.Out.WriteLine("Witness MORE right");
@@ -121,6 +130,50 @@ namespace Rest560
         //     }
         //     return new DisjunctiveCriteriaSatSpec(result1,result2);
         // }
+
+
+
+
+        [WitnessFunction(nameof(Semantics.OneKey), 0)]
+        internal DisjunctiveExamplesSpec WitnessOneKey1(GrammarRule rule, PossibleOrderingsSpec spec) {
+            Console.Out.WriteLine("Witness ONEKey left");
+            var result = new Dictionary<State, IEnumerable<object>>();
+            foreach (var example in spec.OrdExamples) {
+                State inputState = example.Key;
+                var possiblecriterion = spec.GetSatisfiers(inputState);//ew List<Tuple<int,int,int>>{new Tuple<int,int,int>(0,0,0)};//
+                if (possiblecriterion.Count == 0) return null;
+                result[inputState] = possiblecriterion.Cast<object>();
+            }
+            return new DisjunctiveExamplesSpec(result);
+        }
+
+        [WitnessFunction(nameof(Semantics.OneKey), 0)]
+        internal DisjunctiveExamplesSpec WitnessMoreKey1(GrammarRule rule, PossibleOrderingsSpec spec) {
+            Console.Out.WriteLine("Witness MOREKey left");
+            var result = new Dictionary<State, IEnumerable<object>>();
+            foreach (var example in spec.OrdExamples) {
+                State inputState = example.Key;
+                var possiblecriterion = spec.GetSatisfiers(inputState);//ew List<Tuple<int,int,int>>{new Tuple<int,int,int>(0,0,0)};//
+                if (possiblecriterion.Count == 0) return null;
+                result[inputState] = possiblecriterion.Cast<object>();
+            }
+            return new DisjunctiveExamplesSpec(result);
+        }
+        [WitnessFunction(nameof(Semantics.MoreKey), 1, DependsOnParameters = new[] { 0 })]
+        internal PossibleOrderingsSpec WitnessMoreKey2(GrammarRule rule, PossibleOrderingsSpec spec, ExampleSpec leftValue) {
+            Console.Out.WriteLine("Witness MOREKey right");
+            var result = new Dictionary<State, (List<List<string[]>>[] Examples,HashSet<int> Available)>();
+            foreach (var example in spec.OrdExamples) {
+                State inputState = example.Key;
+                result[inputState] = spec.sortBy(inputState,leftValue.Examples[inputState] as Tuple<int,bool>);
+            }
+            return new PossibleOrderingsSpec(result);
+        }
+
+
+
+
+
 
 
 
