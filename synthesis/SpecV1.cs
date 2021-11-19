@@ -101,6 +101,7 @@ namespace Rest560SpecV1 {
                 var j = new Tuple<int,bool>(a,b);
                 newunion.Add(j);
             }
+            Console.Out.WriteLine("found this many satisfiers: {0}",newunion.Count);
             return newunion;
         }
         protected override bool CorrectOnProvided(State state,object obj) {
@@ -223,7 +224,7 @@ namespace Rest560SpecV1 {
                 }
                 newunion.Add(j);
             }
-            Console.Out.WriteLine("found this many satisfiers: {0}",newunion.Count);
+            // Console.Out.WriteLine("found this many satisfiers: {0}",newunion.Count);
             // Tuple<int,int,int> whatever = null;
             // foreach (var hah in newunion) {
             //     Console.Out.WriteLine("\t {0}",hah);
@@ -537,12 +538,6 @@ namespace Rest560SpecV1 {
                 int rowcount = settle.GetLength(0);
                 int colcount = settle.GetLength(1);
                 if (rowcount!=(obj as List<string[]>).Count) continue;
-                // for (int row=0;row<rowcount;row++) {
-                //     for (int col=0;col<colcount;col++) {
-                //         Console.Out.Write("{0}|",String.Join(",",settle[row,col]));
-                //     }
-                //     Console.Out.WriteLine();
-                // }
                 HashSet<int>[] rowconv = new HashSet<int>[rowcount];
                 var workqueue = new UniqueQueue<int>();
                 for (int i=0;i<rowcount;i++) {
@@ -551,7 +546,7 @@ namespace Rest560SpecV1 {
                     // Console.Out.WriteLine("{0} {1}",i,String.Join(",",settle[i,0]));
                     foreach ((int Row,int Col) in settle[i,0]) rowconv[i].Add(Row);
                 }
-                Console.Out.WriteLine();
+                // Console.Out.WriteLine();
                 bool ok = true;
                 while (workqueue.Count>0) {
                     while (workqueue.Count>0) {
@@ -614,7 +609,7 @@ namespace Rest560SpecV1 {
                     }
                 }
                 if (!ok) continue;
-                Console.Out.WriteLine("well, one was deemed ok");
+                // Console.Out.WriteLine("well, one was deemed ok");
                 var semiresult = new List<int>();
                 foreach (var conv in rowconv) semiresult.Add(conv.First());
                 result.Add(semiresult);

@@ -32,15 +32,19 @@ namespace Rest560 {
                     if (direction) {
                         var cmp = sqlcompare(c1[key],c2[key]);
                         if (cmp==0) continue;
-                        return cmp;
+                        return -cmp;
                     } else {
                         var cmp = sqlcompare(c1[key],c2[key]);
                         if (cmp==0) continue;
-                        return -cmp;
+                        return cmp;
                     }
                 }
                 return 0;
             });
+            // Console.Out.WriteLine("produced table:");
+            // foreach (var dd in subq2) {
+            //     Console.Out.WriteLine("--  {0}",dd);
+            // }
             return subq2;
         }
         public static List<string[]> Select(List<string[]> subq,List<Tuple<int,int,int>> filters) {
