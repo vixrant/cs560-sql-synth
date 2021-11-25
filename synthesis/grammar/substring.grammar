@@ -23,19 +23,19 @@ List<Tuple<int,int,int>> Criteria :=
 
 List<Tuple<int,bool>> SortKeys :=
     OneKey(sortCriteria)
-    | MoreKey(sortCriteria,@recurse[5] SortKeys);
+    | MoreKey(sortCriteria, @recurse[5] SortKeys);
     
 List<string[]> Tier3Table :=
     Select(Tier4Table,Criteria)
     | N3(Tier4Table);
 
 List<string[]> Tier4Table :=
-    Join(Tier5Table,joiningLeftColumn,@recurse[2] Tier4Table,joiningRightColumn)
+    Join(Tier5Table,joiningLeftColumn, @recurse[2] Tier4Table,joiningRightColumn)
     | N4(Tier5Table);
 
 List<string[]> Tier5Table :=
     Named(InputTables,tableIndex)
-    //| Group(Tier3Table,groupingColumns,sortCriteria)
+    | Group(Tier3Table, groupingColumns, sortCriteria)
 
 Tuple<int,int,int> filterCriteria;
 Tuple<int,bool> sortCriteria;

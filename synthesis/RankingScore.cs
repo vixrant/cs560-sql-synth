@@ -8,9 +8,7 @@ namespace Rest560
 {
     public class RankingScore : Feature<double>
     {
-        public RankingScore(Grammar grammar) : base(grammar, "Score")
-        {
-        }
+        public RankingScore(Grammar grammar) : base(grammar, "Score") { }
 
         protected override double GetFeatureValueForVariable(VariableNode variable) { return 0; }
 
@@ -62,11 +60,11 @@ namespace Rest560
         public static double One(double a) { return -1; }
         [FeatureCalculator(nameof(Semantics.More))]
 
-        public static double More(double a,double b) {return a+b-1;}
+        public static double More(double a, double b) { return a + b - 1; }
         [FeatureCalculator(nameof(Semantics.OneKey))]
-        public static double OneKey(double a) {return -1;}
+        public static double OneKey(double a) { return -1; }
         [FeatureCalculator(nameof(Semantics.MoreKey))]
-        public static double MoreKey(double a,double b) {return a+b-1;}
+        public static double MoreKey(double a, double b) { return a + b - 1; }
 
 
         [FeatureCalculator("tableIndex", Method = CalculationMethod.FromLiteral)]
