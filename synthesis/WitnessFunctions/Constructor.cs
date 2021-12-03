@@ -12,10 +12,5 @@ namespace Rest560
         Closing the spec object on the right is harder and always depends on the value on the left (for our application)
             Done for: all the rest
         */
-        
-        // [WitnessFunction(nameof(Semantics.Group), 0)]
-        // internal DisjunctiveDoubleFilteredTableSpec WitnessGroup1(GrammarRule rule, DisjunctiveDoubleFilteredTableSpec spec) {
-        //     return spec;
-        // }
     }
 }

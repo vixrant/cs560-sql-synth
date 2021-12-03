@@ -6,7 +6,7 @@ using Microsoft.ProgramSynthesis;
 using Microsoft.ProgramSynthesis.Specifications;
 using Microsoft.ProgramSynthesis.Specifications.Serialization;
 
-//need to memo and dedup
+using Rest560;
 
 namespace Rest560SpecV1
 {
@@ -36,11 +36,13 @@ namespace Rest560SpecV1
                 }
             }
         }
+
         private static int sqlcompare(string a, string b)
         {
             if (!double.TryParse(a, out double u) || !double.TryParse(b, out double v)) return 0;
             return u.CompareTo(v);
         }
+
         public List<Tuple<int, int, int>> GetSatisfiers(State state)
         {
             HashSet<(int, int, int)> union = new HashSet<(int, int, int)>();
@@ -99,6 +101,7 @@ namespace Rest560SpecV1
             // return new List<Tuple<int,int,int>>{whatever};
             return newunion;
         }
+
         protected override bool CorrectOnProvided(State state, object obj)
         {
             var lela = LastTuple == null ? null : LastTuple[state];
@@ -108,6 +111,7 @@ namespace Rest560SpecV1
                 if (lela != null && (lela as IComparable).CompareTo(cand) <= 0) return false;
                 lela = cand;
             }
+            
             foreach (List<List<string[]>> possib in SatExamples[state])
             {
                 var allsat = true;
@@ -122,10 +126,10 @@ namespace Rest560SpecV1
                             bool truth;
                             switch (criteria.Item1)
                             {
-                                case 0: truth = (row[criteria.Item2] == row[criteria.Item3]); break;// Eq=0,
-                                case 1: truth = (row[criteria.Item2] != row[criteria.Item3]); break;// Neq=1,
-                                case 2: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) < 0); break;// Lt=2,
-                                case 3: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) < 0 || row[criteria.Item2] == row[criteria.Item3]); break;// Lteq=3
+                                case BinOp.Eq: truth = (row[criteria.Item2] == row[criteria.Item3]); break;
+                                case BinOp.Neq: truth = (row[criteria.Item2] != row[criteria.Item3]); break;
+                                case BinOp.Lt: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) < 0); break;
+                                case BinOp.Lteq: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) < 0 || row[criteria.Item2] == row[criteria.Item3]); break;
                                 default: throw new ArgumentException("invalid");
                             }
                             if (!truth) { rowworks = false; break; }
@@ -139,14 +143,13 @@ namespace Rest560SpecV1
             return false;
         }
 
-
-
         protected override int GetHashCodeOnInput(State state)
         {
             if (LastTuple == null)
                 return this.SatExamples[state].GetHashCode();
             return (this.SatExamples[state], this.LastTuple[state]).GetHashCode();
         }
+
         protected override Spec TransformInputs(Func<State, State> f)
         {
             var result = new Dictionary<State, List<List<string[]>>[]>();
@@ -156,6 +159,7 @@ namespace Rest560SpecV1
             }
             return new DisjunctiveCriteriaSatSpec(LastTuple, result);
         }
+
         protected override bool EqualsOnInput(State state, Spec spec)
         {
             var other = spec as DisjunctiveCriteriaSatSpec;
