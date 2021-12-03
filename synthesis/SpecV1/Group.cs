@@ -10,12 +10,12 @@ using Rest560;
 
 namespace Rest560SpecV1
 {
-    class DisjunctiveCriteriaSatSpec : Spec
+    class DisjunctiveGroupSpec : Spec
     {
         public IDictionary<State, Tuple<int, int, int>> LastTuple;
         public IDictionary<State, List<List<string[]>>[]> SatExamples;
 
-        public DisjunctiveCriteriaSatSpec(IDictionary<State, Tuple<int, int, int>> LastTuple, IDictionary<State, List<List<string[]>>[]> SatExamples) : base(SatExamples.Keys)
+        public DisjunctiveGroupSpec(IDictionary<State, Tuple<int, int, int>> LastTuple, IDictionary<State, List<List<string[]>>[]> SatExamples) : base(SatExamples.Keys)
         {
             this.SatExamples = SatExamples;
             this.LastTuple = LastTuple;
@@ -130,8 +130,6 @@ namespace Rest560SpecV1
                                 case BinOp.Neq: truth = (row[criteria.Item2] != row[criteria.Item3]); break;
                                 case BinOp.Lt: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) < 0); break;
                                 case BinOp.Lteq: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) < 0 || row[criteria.Item2] == row[criteria.Item3]); break;
-                                case BinOp.Gt: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) > 0); break;
-                                case BinOp.Gteq: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) > 0 || row[criteria.Item2] == row[criteria.Item3]); break;
                                 default: throw new ArgumentException("invalid");
                             }
                             if (!truth) { rowworks = false; break; }

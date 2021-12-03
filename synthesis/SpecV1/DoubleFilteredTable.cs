@@ -6,8 +6,6 @@ using Microsoft.ProgramSynthesis;
 using Microsoft.ProgramSynthesis.Specifications;
 using Microsoft.ProgramSynthesis.Specifications.Serialization;
 
-//need to memo and dedup
-
 namespace Rest560SpecV1
 {
 
