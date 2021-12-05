@@ -33,13 +33,13 @@ List<string[]> Tier4Table :=
 
 List<string[]> Tier5Table :=
     Named(InputTables, tableIndex)
-    | Group(Tier3Table, groupingColumns, aggregator);
+    // | Group(Tier3Table, groupingColumns, aggregator);
 
 // The first integer in the triple is an input to a binary operator enum.
 // This lets us yield directly the set of possibilities with just one disjuntive examples spec.
 Tuple<int, int, int> filterCriteria;
 Tuple<int, bool> sortCriteria;
-Tuple<int, int> aggregator;
+// Tuple<int, int> aggregator;
 int joiningLeftColumn;
 int joiningRightColumn;
 int tableIndex;
