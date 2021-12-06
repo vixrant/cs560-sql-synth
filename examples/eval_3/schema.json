@@ -1,0 +1,13 @@
+{
+    "inputs": [{
+        "name": "customers",
+        "columns": [
+            "cid",
+            "name",
+            "credit_card",
+            "purchases",
+            "call"
+        ]
+    }],
+    "output": []
+}

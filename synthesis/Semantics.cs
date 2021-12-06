@@ -72,8 +72,6 @@ namespace Rest560
                         case BinOp.Neq: truth = (row[criteria.Item2] != row[criteria.Item3]); break;
                         case BinOp.Lt: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) < 0); break;
                         case BinOp.Lteq: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) < 0 || row[criteria.Item2] == row[criteria.Item3]); break;
-                        case BinOp.Gt: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) > 0); break;
-                        case BinOp.Gteq: truth = (sqlcompare(row[criteria.Item2], row[criteria.Item3]) > 0 || row[criteria.Item2] == row[criteria.Item3]); break;
                         default: throw new ArgumentException("invalid");
                     }
                     if (!truth) { rowworks = false; break; }

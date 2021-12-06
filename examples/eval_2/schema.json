@@ -1,0 +1,20 @@
+{
+    "inputs":[{
+        "name":"customers",
+        "columns": [
+          "cid",
+          "name"
+        ]
+    },{
+        "name":"airtravel",
+        "columns": [
+            "month",
+            "1958",
+            "1959",
+            "1960",
+            "cid"
+        ]
+    }],
+    "output":[
+    ]
+}

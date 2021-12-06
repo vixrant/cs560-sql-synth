@@ -1,0 +1,31 @@
+{
+    "inputs": [{
+        "name": "students",
+        "columns": [
+            "sid", "sname", "major", "level", "age"
+        ]
+    }, {
+        "name": "rooms",
+        "columns": [
+            "rid", "rname"
+        ]
+    }, {
+        "name": "faculty",
+        "columns": [
+            "fid", "fname", "deptid"
+        ]
+    }, {
+        "name": "class",
+        "columns": [
+            "cid", "cname", "meets_at", "rid", "fid"
+        ]
+    }, {
+        "name": "enrolled",
+        "columns": [
+            "sid", "cid"
+        ]
+    }],
+    "output": [
+        "cid", "rid"
+    ]
+}

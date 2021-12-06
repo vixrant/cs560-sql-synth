@@ -1,6 +1,6 @@
 {
-    "inputs": [{
-        "name": "addresses",
+    "inputs":[{
+        "name":"addresses",
         "columns": [
             "first",
             "last",
@@ -9,16 +9,16 @@
             "state",
             "zip"
         ]
-    }, {
-        "name": "airtravel",
+    },{
+        "name":"airtravel",
         "columns": [
             "month",
             "1958",
             "1959",
             "1960"
         ]
-    }, {
-        "name": "cities",
+    },{
+        "name":"cities",
         "columns": [
             "LatD",
             "LatM",
@@ -31,18 +31,7 @@
             "city",
             "state"
         ]
-    }, {
-        "name": "linker",
-        "columns": [
-            "key",
-            "value"
-        ]
     }],
-    "output": [
-        "month",
-        "1958",
-        "1959",
-        "corresponding"
-    ],
-    "group": ["state"]
+    "output":[
+    ]
 }
