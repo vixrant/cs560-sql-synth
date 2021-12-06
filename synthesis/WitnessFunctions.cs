@@ -87,9 +87,10 @@ namespace Rest560
                 if (result[inputState].Item1.Length==0) {
                     // Console.Out.WriteLine("a little worrying?");
                     return null;
-                } else {
-                    Console.Out.WriteLine("well, one passed");
                 }
+                //  else {
+                //     Console.Out.WriteLine("well, one passed");
+                // }
             }
             return new PossibleOrderingsSpec(result);
         }
