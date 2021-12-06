@@ -155,6 +155,8 @@ namespace Rest560
                 Console.Out.WriteLine("Program {0}: ", counter);
                 Console.Out.WriteLine(program.PrintAST(ASTSerializationFormat.HumanReadable));
                 counter++;
+
+                DSLToSQL(program.PrintAST(ASTSerializationFormat.HumanReadable), schemaPath);
             }
         }
 
@@ -179,5 +181,115 @@ namespace Rest560
         //         Console.Out.WriteLine("RESULT: \"{0}\" -> \"{1}\"", newInput, _topFirstProgram.Invoke(newInputState));
         //     }
         // }
+
+        private static void DSLToSQL(string dsl, string schemaPath)
+        {
+            var schema = JsonConvert.DeserializeObject<ExampleSchema>(File.ReadAllText(schemaPath));
+            string sql = "";
+
+            int table_id = -1;
+            int join_table_id = -1;
+            int join_left = 0, join_right = 0;
+            string input_table = "";
+            string COLS = "";
+            int sort_key = -1;
+            bool sort_direction = false;
+            int[] columns_criteria = {};
+            int[] select_criteria = {};
+            
+            if (dsl.StartsWith("Project")) {
+                dsl = dsl.Substring(8, dsl.Length - 9);
+
+                int i = dsl.LastIndexOf('[');
+                string criteria = dsl.Substring(i+1, dsl.Length-i-2);
+                dsl = dsl.Substring(0, i-2);
+
+                columns_criteria = criteria.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            } else if (dsl.StartsWith("N1")) {
+                dsl = dsl.Substring(3, dsl.Length - 4);
+                COLS = "*";
+            }
+
+            if (dsl.StartsWith("Order")) {
+                dsl = dsl.Substring(6, dsl.Length - 7);
+
+                int i = dsl.IndexOf("OneKey");
+                string sk = dsl.Substring(i+8, dsl.Length-i-10);
+                dsl = dsl.Substring(0, i-2);
+
+                string[] sort_criteria = sk.Split(',');
+                sort_key = Convert.ToInt32(sort_criteria[0]);
+                sort_direction = sort_criteria[1] == " False" ? false : true;
+            } else if (dsl.StartsWith("N2")) {
+                dsl = dsl.Substring(3, dsl.Length - 4);
+            }
+
+            if (dsl.StartsWith("Select")) {
+                dsl = dsl.Substring(7, dsl.Length - 8);
+
+                int i = dsl.IndexOf("One");
+                string criteria = dsl.Substring(i+5, dsl.Length-i-7);
+                dsl = dsl.Substring(0, i-2);
+                select_criteria = criteria.Split(',').Select(n => Convert.ToInt32(n)).ToArray();
+            } else if (dsl.StartsWith("N3")) {
+                dsl = dsl.Substring(3, dsl.Length - 4);
+            }
+
+            if (dsl.StartsWith("Join")) {
+                dsl = dsl.Substring(5, dsl.Length - 6);
+                int i = dsl.IndexOf(')');
+                string left_join_s = dsl.Substring(i+2);
+                string right_table_s = left_join_s.Substring(left_join_s.IndexOf(',')+2);
+                join_left = Convert.ToInt32(left_join_s.Substring(0, left_join_s.IndexOf(',')));
+                join_right = Convert.ToInt32(right_table_s.Substring(right_table_s.LastIndexOf(',')+2));
+                join_table_id = Convert.ToInt32(right_table_s.Substring(right_table_s.IndexOf(',')+1, right_table_s.IndexOf(')')-right_table_s.IndexOf(',')-1));
+                
+                dsl = dsl.Substring(0, i+1);
+            } else if (dsl.StartsWith("N4")) {
+                dsl = dsl.Substring(3, dsl.Length - 4);
+            }
+
+            if (dsl.StartsWith("Named")) {
+                dsl = dsl.Substring(8, dsl.Length - 9);
+
+                int i = dsl.LastIndexOf(',');
+                table_id = Convert.ToInt32(dsl.Substring(i+1, dsl.Length-i-1));
+                input_table = schema.inputs[table_id].name;
+            }
+
+            if (COLS != "*") {
+                COLS += schema.inputs[table_id].columns[columns_criteria[0]];
+                for (int id = 1; id < columns_criteria.Length; id++) {
+                    COLS += ", " + schema.inputs[table_id].columns[columns_criteria[id]];
+                }
+            }
+
+            sql = "SELECT " + COLS + " FROM " + input_table;
+            
+            if (join_table_id != -1) {
+                sql += " INNER JOIN " + schema.inputs[join_table_id].name + " ON "
+                        + schema.inputs[table_id].name + "." + schema.inputs[table_id].columns[join_left] + " = "
+                        + schema.inputs[join_table_id].name + "." + schema.inputs[join_table_id].columns[join_right];
+            }
+
+            if (select_criteria.Length != 0) {
+                sql += " WHERE " + schema.inputs[table_id].columns[select_criteria[1]];
+                switch (select_criteria[0]) {
+                    case BinOp.Eq: sql += " = "; break;
+                    case BinOp.Neq: sql += " <> "; break;
+                    case BinOp.Lt: sql += " < "; break;
+                    case BinOp.Lteq: sql += " <= "; break;
+                    case BinOp.Gt: sql += " > "; break;
+                    case BinOp.Gteq: sql += " >= "; break;
+                }
+                sql += schema.inputs[table_id].columns[select_criteria[2]];
+            }
+
+            if (sort_key != -1) {
+                sql += " ORDER BY " + schema.inputs[table_id].columns[sort_key] + (sort_direction ? " DESC" : " ASC");
+            }
+
+            Console.Out.WriteLine("SQL: " + sql);
+        }
     }
 }
