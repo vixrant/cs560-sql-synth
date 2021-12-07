@@ -258,9 +258,9 @@ namespace Rest560
             }
 
             if (COLS != "*") {
-                COLS += schema.inputs[table_id].columns[columns_criteria[0]];
+                COLS += (join_table_id != -1 ? schema.inputs[table_id].name + "." : "") + schema.inputs[table_id].columns[columns_criteria[0]];
                 for (int id = 1; id < columns_criteria.Length; id++) {
-                    COLS += ", " + schema.inputs[table_id].columns[columns_criteria[id]];
+                    COLS += ", " + (join_table_id != -1 ? schema.inputs[table_id].name + "." : "") + schema.inputs[table_id].columns[columns_criteria[id]];
                 }
             }
 
