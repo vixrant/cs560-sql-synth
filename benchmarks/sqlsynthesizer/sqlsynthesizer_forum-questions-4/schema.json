@@ -1,0 +1,34 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "T1Column1",
+                "T1Column2",
+                "T1Column3",
+                "T1Column4"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "T2Column1",
+                "T1Column2",
+                "T2Column3"
+            ]
+        },
+        {
+            "name": "t2",
+            "columns": [
+                "T2Column1",
+                "T3Column2"
+            ]
+        }
+    ],
+    "output": [
+        "T1Column1",
+        "T2Column3",
+        "T1Column4",
+        "T3Column2"
+    ]
+}

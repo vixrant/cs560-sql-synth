@@ -1,0 +1,15 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "ErrorName",
+                "Value"
+            ]
+        }
+    ],
+    "output": [
+        "c1",
+        "c2"
+    ]
+}

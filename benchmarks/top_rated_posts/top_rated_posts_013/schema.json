@@ -1,0 +1,16 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "orgName",
+                "id"
+            ]
+        }
+    ],
+    "output": [
+        "orgName",
+        "dupcount",
+        "id"
+    ]
+}

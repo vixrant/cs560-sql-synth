@@ -1,0 +1,26 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "school_id",
+                "class_id",
+                "school_location"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "staff_id",
+                "forename",
+                "school_id",
+                "wage"
+            ]
+        }
+    ],
+    "output": [
+        "school_id",
+        "numberofstaff",
+        "salary"
+    ]
+}

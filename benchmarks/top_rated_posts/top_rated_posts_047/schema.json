@@ -1,0 +1,19 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "user",
+                "time",
+                "io"
+            ]
+        }
+    ],
+    "output": [
+        "id",
+        "user",
+        "time",
+        "io"
+    ]
+}

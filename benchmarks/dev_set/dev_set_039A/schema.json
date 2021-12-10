@@ -1,0 +1,17 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "trans",
+                "user",
+                "Month"
+            ]
+        }
+    ],
+    "output": [
+        "Avgtrans",
+        "user3Trans",
+        "Month"
+    ]
+}

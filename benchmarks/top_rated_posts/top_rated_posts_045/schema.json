@@ -1,0 +1,17 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "user_id",
+                "account_no",
+                "zip",
+                "date"
+            ]
+        }
+    ],
+    "output": [
+        "user_id",
+        "count"
+    ]
+}

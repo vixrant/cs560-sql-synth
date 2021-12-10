@@ -1,0 +1,24 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "ID",
+                "DESCR"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "ID",
+                "LINK",
+                "LAST_DATE"
+            ]
+        }
+    ],
+    "output": [
+        "c1",
+        "c2",
+        "c3"
+    ]
+}

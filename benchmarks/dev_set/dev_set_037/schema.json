@@ -1,0 +1,15 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "chapterid",
+                "xmlfile"
+            ]
+        }
+    ],
+    "output": [
+        "chapterid",
+        "xmlfile"
+    ]
+}

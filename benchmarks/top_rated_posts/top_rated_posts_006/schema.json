@@ -1,0 +1,17 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "Id",
+                "Name",
+                "Other_Columns"
+            ]
+        }
+    ],
+    "output": [
+        "col1",
+        "col2",
+        "col3"
+    ]
+}

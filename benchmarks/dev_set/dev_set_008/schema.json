@@ -1,0 +1,15 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "a",
+                "b"
+            ]
+        }
+    ],
+    "output": [
+        "a",
+        "max(b)"
+    ]
+}

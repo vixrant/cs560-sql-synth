@@ -1,0 +1,22 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "by",
+                "author",
+                "time",
+                "time_ts",
+                "text",
+                "parent",
+                "deleted",
+                "dead",
+                "ranking"
+            ]
+        }
+    ],
+    "output": [
+        "num_deleted_posts"
+    ]
+}

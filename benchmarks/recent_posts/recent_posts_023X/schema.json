@@ -1,0 +1,27 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "child1",
+                "name1",
+                "child2",
+                "name2",
+                "child3",
+                "name3",
+                "child4",
+                "name4"
+            ]
+        }
+    ],
+    "output": [
+        "child1",
+        "name1",
+        "child2",
+        "name2",
+        "child3",
+        "name3",
+        "child4",
+        "name4"
+    ]
+}

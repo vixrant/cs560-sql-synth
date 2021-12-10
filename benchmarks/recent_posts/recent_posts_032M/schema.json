@@ -1,0 +1,18 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "Id",
+                "crit1",
+                "crit2",
+                "value"
+            ]
+        }
+    ],
+    "output": [
+        "crit1",
+        "crit2",
+        "value"
+    ]
+}

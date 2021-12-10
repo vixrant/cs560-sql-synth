@@ -1,0 +1,17 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "name",
+                "school"
+            ]
+        }
+    ],
+    "output": [
+        "id",
+        "name",
+        "school"
+    ]
+}

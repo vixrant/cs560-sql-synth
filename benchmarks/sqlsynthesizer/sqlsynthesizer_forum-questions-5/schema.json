@@ -1,0 +1,16 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "v_key",
+                "entryid",
+                "result"
+            ]
+        }
+    ],
+    "output": [
+        "entryid",
+        "count"
+    ]
+}

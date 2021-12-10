@@ -1,0 +1,30 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "hash",
+                "size",
+                "virtual_size",
+                "version",
+                "lock_time",
+                "block_hash",
+                "block_number",
+                "block_timestamp",
+                "block_timestamp_month",
+                "input_count",
+                "output_count",
+                "input_value",
+                "output_value",
+                "is_coinbase",
+                "fee",
+                "inputs",
+                "outputs"
+            ]
+        }
+    ],
+    "output": [
+        "transactions",
+        "trans_date"
+    ]
+}

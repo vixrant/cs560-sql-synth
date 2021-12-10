@@ -1,0 +1,19 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "Customer",
+                "email",
+                "ZIP",
+                "shop"
+            ]
+        }
+    ],
+    "output": [
+        "Customer",
+        "email",
+        "ZIP",
+        "shop"
+    ]
+}

@@ -1,0 +1,26 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "repo_name",
+                "ref",
+                "path",
+                "mode",
+                "id",
+                "symlink_target"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "repo_name",
+                "license"
+            ]
+        }
+    ],
+    "output": [
+        "license",
+        "number_of_files"
+    ]
+}

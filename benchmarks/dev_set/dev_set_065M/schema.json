@@ -1,0 +1,36 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id_orden",
+                "date",
+                "total",
+                "id_usuario"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "id_usuario",
+                "name",
+                "phone"
+            ]
+        },
+        {
+            "name": "t2",
+            "columns": [
+                "id_orden",
+                "edo"
+            ]
+        }
+    ],
+    "output": [
+        "id_orden",
+        "date",
+        "total",
+        "name",
+        "phone",
+        "maxedo"
+    ]
+}

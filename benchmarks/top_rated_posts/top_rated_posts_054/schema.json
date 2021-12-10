@@ -1,0 +1,15 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "created_at",
+                "count"
+            ]
+        }
+    ],
+    "output": [
+        "created_at",
+        "count"
+    ]
+}

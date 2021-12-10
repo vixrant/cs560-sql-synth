@@ -1,0 +1,15 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "yrq",
+                "start_date",
+                "end_date"
+            ]
+        }
+    ],
+    "output": [
+        "col1"
+    ]
+}

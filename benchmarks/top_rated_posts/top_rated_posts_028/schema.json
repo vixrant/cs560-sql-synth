@@ -1,0 +1,22 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "PID"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "PID",
+                "SEQ",
+                "Descr"
+            ]
+        }
+    ],
+    "output": [
+        "PID",
+        "Descr"
+    ]
+}

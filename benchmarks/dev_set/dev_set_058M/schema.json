@@ -1,0 +1,19 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "app_name",
+                "app_platform",
+                "post_created",
+                "post_id"
+            ]
+        }
+    ],
+    "output": [
+        "app_name",
+        "app_platform",
+        "post_created",
+        "post_id"
+    ]
+}

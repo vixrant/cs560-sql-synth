@@ -1,0 +1,24 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "VehicleID",
+                "Name"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "LocationID",
+                "VehicleID",
+                "City"
+            ]
+        }
+    ],
+    "output": [
+        "VehicleID",
+        "Name",
+        "Locations"
+    ]
+}

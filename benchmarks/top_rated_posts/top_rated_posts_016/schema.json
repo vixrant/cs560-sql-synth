@@ -1,0 +1,16 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "ID",
+                "COMPANY_ID",
+                "EMPLOYEE"
+            ]
+        }
+    ],
+    "output": [
+        "COMPANY_ID",
+        "EMPLOYEE"
+    ]
+}

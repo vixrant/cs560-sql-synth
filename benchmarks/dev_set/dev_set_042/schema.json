@@ -1,0 +1,19 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "book_id",
+                "author_id",
+                "mark",
+                "year"
+            ]
+        }
+    ],
+    "output": [
+        "book_id",
+        "author_id",
+        "mark",
+        "year"
+    ]
+}

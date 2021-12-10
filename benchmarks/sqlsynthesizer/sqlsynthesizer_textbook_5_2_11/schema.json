@@ -1,0 +1,30 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "supplier_key",
+                "part_id",
+                "cost"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "part_id",
+                "color"
+            ]
+        },
+        {
+            "name": "t2",
+            "columns": [
+                "supplier_key",
+                "sname"
+            ]
+        }
+    ],
+    "output": [
+        "sname",
+        "max_cost"
+    ]
+}

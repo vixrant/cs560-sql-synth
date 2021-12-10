@@ -1,0 +1,15 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "idx_key",
+                "upedonid"
+            ]
+        }
+    ],
+    "output": [
+        "upedonid",
+        "count"
+    ]
+}

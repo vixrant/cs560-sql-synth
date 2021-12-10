@@ -1,0 +1,22 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "ID",
+                "item"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "f1",
+                "f2"
+            ]
+        }
+    ],
+    "output": [
+        "ID",
+        "item"
+    ]
+}

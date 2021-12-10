@@ -1,0 +1,19 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "tranid",
+                "item",
+                "startdate",
+                "enddate"
+            ]
+        }
+    ],
+    "output": [
+        "tranid",
+        "item",
+        "startdate",
+        "enddate"
+    ]
+}

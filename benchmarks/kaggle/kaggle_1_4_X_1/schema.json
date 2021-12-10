@@ -1,0 +1,19 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "country_name",
+                "country_code",
+                "indicator_name",
+                "indicator_code",
+                "value",
+                "year"
+            ]
+        }
+    ],
+    "output": [
+        "country_name",
+        "avg_ed_spending_pct"
+    ]
+}

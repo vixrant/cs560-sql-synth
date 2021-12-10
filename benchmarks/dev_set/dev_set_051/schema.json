@@ -1,0 +1,15 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "ID",
+                "P_Id",
+                "room"
+            ]
+        }
+    ],
+    "output": [
+        "P_Id"
+    ]
+}

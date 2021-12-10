@@ -1,0 +1,19 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "Id",
+                "name",
+                "type",
+                "price"
+            ]
+        }
+    ],
+    "output": [
+        "Id",
+        "name",
+        "type",
+        "price"
+    ]
+}

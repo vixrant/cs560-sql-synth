@@ -1,0 +1,16 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "grp",
+                "subGroup"
+            ]
+        }
+    ],
+    "output": [
+        "grp",
+        "subGroup",
+        "count"
+    ]
+}

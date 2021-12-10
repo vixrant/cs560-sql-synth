@@ -1,0 +1,22 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "CustomerId"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "CustomerId",
+                "ReportDt"
+            ]
+        }
+    ],
+    "output": [
+        "CustomerId",
+        "LastReportPullDt",
+        "ReportCount"
+    ]
+}

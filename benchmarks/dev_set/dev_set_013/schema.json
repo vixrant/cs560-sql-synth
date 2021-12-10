@@ -1,0 +1,21 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "date",
+                "time_stamp",
+                "licenseid",
+                "storeid",
+                "deviceid",
+                "value"
+            ]
+        }
+    ],
+    "output": [
+        "date",
+        "deviceid",
+        "count"
+    ]
+}

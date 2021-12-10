@@ -1,0 +1,25 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "amount",
+                "id_waiter"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "id",
+                "name"
+            ]
+        }
+    ],
+    "output": [
+        "name",
+        "waiter",
+        "maxamount",
+        "bill"
+    ]
+}

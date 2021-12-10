@@ -1,0 +1,14 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "StoreId",
+                "ClientId"
+            ]
+        }
+    ],
+    "output": [
+        "StoreId"
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "cname",
+                "wmname",
+                "avg"
+            ]
+        }
+    ],
+    "output": [
+        "cname",
+        "wmname",
+        "max"
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "project_code",
+                "invoice_key",
+                "invoice_amount"
+            ]
+        }
+    ],
+    "output": [
+        "project_code",
+        "sum_invoice"
+    ]
+}

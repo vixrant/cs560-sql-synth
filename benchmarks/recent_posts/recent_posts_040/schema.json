@@ -1,0 +1,21 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "timestamp",
+                "first_name",
+                "last_name",
+                "action"
+            ]
+        }
+    ],
+    "output": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5"
+    ]
+}

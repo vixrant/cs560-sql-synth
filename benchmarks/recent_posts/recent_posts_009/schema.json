@@ -1,0 +1,19 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "user_id",
+                "submitted_date",
+                "text",
+                "status"
+            ]
+        }
+    ],
+    "output": [
+        "user_id",
+        "text",
+        "dups"
+    ]
+}

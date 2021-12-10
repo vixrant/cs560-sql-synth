@@ -1,0 +1,17 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "zone_id",
+                "zone_name",
+                "time_start"
+            ]
+        }
+    ],
+    "output": [
+        "c1",
+        "c2",
+        "c3"
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "NationalAvg",
+                "exams_description"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "SchoolAvg",
+                "exams_description",
+                "School"
+            ]
+        }
+    ],
+    "output": [
+        "School Avg",
+        "NationalAvg",
+        "exams_description",
+        "School"
+    ]
+}

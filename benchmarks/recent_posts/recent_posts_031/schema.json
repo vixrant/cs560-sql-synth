@@ -1,0 +1,25 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "channelID",
+                "accountID",
+                "role"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "channelID",
+                "channelName",
+                "type"
+            ]
+        }
+    ],
+    "output": [
+        "channelID",
+        "channelName",
+        "type"
+    ]
+}

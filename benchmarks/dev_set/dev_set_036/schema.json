@@ -1,0 +1,25 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "GUID",
+                "PID"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "GUID",
+                "LastName",
+                "FirstName"
+            ]
+        }
+    ],
+    "output": [
+        "c1",
+        "c2",
+        "c3",
+        "c4"
+    ]
+}

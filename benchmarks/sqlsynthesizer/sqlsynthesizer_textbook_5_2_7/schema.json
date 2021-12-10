@@ -1,0 +1,21 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "supplier_key",
+                "part_id"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "part_id",
+                "color"
+            ]
+        }
+    ],
+    "output": [
+        "sname"
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "ID",
+                "DocumentID",
+                "Status",
+                "DateCreated"
+            ]
+        }
+    ],
+    "output": [
+        "DocumentID",
+        "Status",
+        "DateCreated"
+    ]
+}

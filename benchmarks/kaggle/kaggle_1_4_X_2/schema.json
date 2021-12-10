@@ -1,0 +1,20 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "country_name",
+                "country_code",
+                "indicator_name",
+                "indicator_code",
+                "value",
+                "year"
+            ]
+        }
+    ],
+    "output": [
+        "indicator_code",
+        "indicator_name",
+        "num_rows"
+    ]
+}

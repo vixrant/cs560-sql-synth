@@ -1,0 +1,21 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "ID_key",
+                "Room"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "ID_key_student",
+                "ID_key"
+            ]
+        }
+    ],
+    "output": [
+        "ID_key"
+    ]
+}

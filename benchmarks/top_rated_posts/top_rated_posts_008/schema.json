@@ -1,0 +1,26 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "OrderID",
+                "OrderGUID",
+                "OrderNumber"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "LineItemGUID",
+                "OrderID",
+                "Quantity",
+                "Description"
+            ]
+        }
+    ],
+    "output": [
+        "OrderNumber",
+        "Quantity",
+        "Description"
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "C_name",
+                "F_key",
+                "Room"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "c"
+            ]
+        },
+        {
+            "name": "t2",
+            "columns": [
+                "F_key",
+                "F_name"
+            ]
+        }
+    ],
+    "output": [
+        "F_name"
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "S_key",
+                "S_name"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "S_key",
+                "C_name"
+            ]
+        }
+    ],
+    "output": [
+        "S_name"
+    ]
+}

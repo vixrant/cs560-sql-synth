@@ -1,0 +1,27 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "title",
+                "url",
+                "text",
+                "dead",
+                "by",
+                "score",
+                "time",
+                "timestamp",
+                "type",
+                "id",
+                "parent",
+                "descendants",
+                "ranking",
+                "deleted"
+            ]
+        }
+    ],
+    "output": [
+        "score",
+        "title"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "Team",
+                "Player"
+            ]
+        }
+    ],
+    "output": [
+        "c1"
+    ]
+}

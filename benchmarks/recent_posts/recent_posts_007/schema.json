@@ -1,0 +1,19 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "Employee",
+                "FromDate",
+                "ToDate",
+                "Code"
+            ]
+        }
+    ],
+    "output": [
+        "Employee",
+        "FromDate",
+        "ToDate",
+        "Code"
+    ]
+}

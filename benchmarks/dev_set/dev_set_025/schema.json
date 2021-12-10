@@ -1,0 +1,16 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "Id",
+                "Alerts",
+                "Alert_Date"
+            ]
+        }
+    ],
+    "output": [
+        "Alerts",
+        "Alert_Date"
+    ]
+}

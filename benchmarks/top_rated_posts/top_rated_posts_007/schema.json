@@ -1,0 +1,21 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "home",
+                "datetime",
+                "player",
+                "resource"
+            ]
+        }
+    ],
+    "output": [
+        "id",
+        "home",
+        "datetime",
+        "player",
+        "resource"
+    ]
+}

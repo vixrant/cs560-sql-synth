@@ -1,0 +1,42 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "by",
+                "author",
+                "time",
+                "time_ts",
+                "text",
+                "parent",
+                "deleted",
+                "dead",
+                "ranking"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "id",
+                "by",
+                "score",
+                "time",
+                "time_ts",
+                "title",
+                "url",
+                "text",
+                "deleted",
+                "dead",
+                "descendants",
+                "author"
+            ]
+        }
+    ],
+    "output": [
+        "story_id",
+        "by",
+        "title",
+        "num_comments"
+    ]
+}

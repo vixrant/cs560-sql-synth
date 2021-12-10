@@ -1,0 +1,19 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "acct_id",
+                "Bill_Id",
+                "Bill_dt",
+                "alt_bill_id"
+            ]
+        }
+    ],
+    "output": [
+        "acct_id",
+        "Bill_Id",
+        "Bill_dt",
+        "alt_bill_id"
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "name",
+                "phone_number"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "id",
+                "date",
+                "phone_number"
+            ]
+        }
+    ],
+    "output": [
+        "id",
+        "date",
+        "phone_number"
+    ]
+}

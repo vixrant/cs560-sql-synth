@@ -1,0 +1,17 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "CHARGEID",
+                "CHARGETYPE",
+                "SERVICEMONTH"
+            ]
+        }
+    ],
+    "output": [
+        "CHARGEID",
+        "CHARGETYPE",
+        "SERVICEMONTH"
+    ]
+}

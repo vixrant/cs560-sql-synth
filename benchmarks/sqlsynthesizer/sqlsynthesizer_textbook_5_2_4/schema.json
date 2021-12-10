@@ -1,0 +1,28 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "sid",
+                "part_key"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "part_key",
+                "pname"
+            ]
+        },
+        {
+            "name": "t2",
+            "columns": [
+                "sid",
+                "sname"
+            ]
+        }
+    ],
+    "output": [
+        "pname"
+    ]
+}

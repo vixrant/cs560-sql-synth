@@ -1,0 +1,17 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "name",
+                "city"
+            ]
+        }
+    ],
+    "output": [
+        "id",
+        "name",
+        "city"
+    ]
+}

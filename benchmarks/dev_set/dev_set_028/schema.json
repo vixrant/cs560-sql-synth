@@ -1,0 +1,19 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "id",
+                "productId",
+                "orderIndex",
+                "rejected"
+            ]
+        }
+    ],
+    "output": [
+        "id",
+        "productId",
+        "orderIndex",
+        "rejected"
+    ]
+}

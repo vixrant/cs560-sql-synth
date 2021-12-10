@@ -1,0 +1,25 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "attendee_id",
+                "others1"
+            ]
+        },
+        {
+            "name": "t1",
+            "columns": [
+                "attendee_id",
+                "others2",
+                "event_id"
+            ]
+        }
+    ],
+    "output": [
+        "attendee_id",
+        "others1",
+        "others2",
+        "event_id"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "loginid",
+                "provider",
+                "city"
+            ]
+        }
+    ],
+    "output": [
+        "loginid"
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "inputs": [
+        {
+            "name": "t0",
+            "columns": [
+                "ID",
+                "User",
+                "Activity",
+                "PageURL"
+            ]
+        }
+    ],
+    "output": [
+        "User",
+        "Activity",
+        "PageURL"
+    ]
+}
